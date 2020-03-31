@@ -2,10 +2,10 @@
     <?php require 'adminnav.html.php'; ?>
 
     <section class="right">
-        <h2>Create new account</h2>
+        <h2>Create new user</h2>
         <?php if (isset($errors) && count($errors) > 0): ?>
             <div class="errors">
-                <p>The account could not be created:</p>
+                <p>The user could not be created:</p>
                 <ul>
                     <?php foreach ($errors as $error): ?>
                         <li><?=$error;?></li>
