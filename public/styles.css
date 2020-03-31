@@ -120,3 +120,12 @@ a:hover {color: #ccc !important;}
 main h1 {color: #666;}
 
 main img {display: block;}
+
+.errors ul li {
+	color: red;
+}
+
+form .required::after {
+	content: '*';
+	color:red;
+}
