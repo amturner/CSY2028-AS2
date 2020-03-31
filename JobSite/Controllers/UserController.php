@@ -53,21 +53,21 @@ class UserController {
                 $this->usersTable->save($values);
     
                 return [
-                    'template' => 'admin/registersuccess.html.php',
+                    'template' => 'admin/addusersuccess.html.php',
                     'variables' => [
                         'username' => $username
                     ],
-                    'title' => 'Account Created'
+                    'title' => 'User Created'
                 ];
             }
             // Display the registration from with any generated errors.
             else {
                 return [
-                    'template' => 'admin/registerform.html.php',
+                    'template' => 'admin/adduser.html.php',
                     'variables' => [
                         'errors' => $errors
                     ],
-                    'title' => 'Create Account'
+                    'title' => 'Create User'
                 ];
             }
         }
@@ -75,7 +75,7 @@ class UserController {
 
     public function addUserForm() {
         return [
-			'template' => 'admin/registerform.html.php',
+			'template' => 'admin/adduser.html.php',
 			'variables' => [],
 			'title' => 'Create Account'
 		];
@@ -86,29 +86,68 @@ class UserController {
             $user = $this->usersTable->retrieveRecord('username', $_POST['login']['username']);
 
             $username = $_POST['login']['username'];
-            $password = $username . $_POST['login']['password'];
+            $password = $_POST['login']['password'];
+            $passwordWithUsername = $username . $password;
 
-            if (password_verify($password, $user[0]->password)) {
+            $error = '';
+
+            if ($username != '' && $password != '')
+                if (!empty($user)) {
+                    if (password_verify($passwordWithUsername, $user[0]->password) == true) {
+                        if ($user[0]->active == 0)
+                            $error = 'Your account has not been activated. Please contact an administrator.';
+                    }
+                    else
+                        $error = 'The password provided is incorrect.';
+                }
+                else
+                    $error = 'A user with the username provided does not exist.';
+            else
+                $error = 'You have not provided a username and/or password.';
+
+            if ($error == '') {
                 session_start();
+
+                if ($user[0]->administrator == 1)
+                    $_SESSION['isAdmin'] = true;
+                else
+                    $_SESSION['isAdmin'] = false;
+
+                $_SESSION['id'] = $user[0]->id;
+
                 $_SESSION['loggedIn'] = true;
-                $_SESSION['user_id'] = $user[0]->user_id;
                 header('Location: /admin');
+            }
+            else {
+                return [
+                    'template' => 'admin/login.html.php',
+                    'variables' => [
+                        'error' => $error
+                    ],
+                    'title' => 'Log in'
+                ];
             }
         }
     }
 
     public function loginForm() {
-        return [
-            'template' => 'admin/loginform.html.php',
-            'variables' => [],
-            'title' => 'Log in'
-        ];
+        session_start();
+        if (!isset($_SESSION['loggedIn'])) {
+            return [
+                'template' => 'admin/login.html.php',
+                'variables' => [],
+                'title' => 'Log in'
+            ];
+        }
+        else
+            header('Location: /admin');
     }
 
     public function logout() {
         //session_start();
         unset($_SESSION['loggedIn']);
-        unset($_SESSION['user_id']);
+        unset($_SESSION['isAdmin']);
+        unset($_SESSION['id']);
         //header('Location: /admin/logout');
 
         return [
