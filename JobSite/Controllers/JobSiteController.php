@@ -13,7 +13,7 @@ class JobSiteController {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
         return [
-            'template' => 'home.html.php',
+            'template' => 'main/home.html.php',
             'variables' => [
                 'categories' => $categories
             ],
@@ -33,7 +33,7 @@ class JobSiteController {
             $jobs = $this->jobsTable->retrieveRecord('categoryId', $categoryId[0]->id);
     
             return [
-                'template' => 'jobs.html.php',
+                'template' => 'main/jobs.html.php',
                 'variables' => [
                     'categoryName' => $categoryName[0]->name,
                     'jobs' => $jobs,
@@ -44,7 +44,7 @@ class JobSiteController {
         }
         else {
             return [
-                'template' => 'jobs.html.php',
+                'template' => 'main/jobs.html.php',
                 'variables' => [
                     'categories' => $categories
                 ],
@@ -57,7 +57,7 @@ class JobSiteController {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
         return [
-            'template' => 'home.html.php',
+            'template' => 'main/home.html.php',
             'variables' => [
                 'categories' => $categories
             ],
@@ -69,7 +69,7 @@ class JobSiteController {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
         return [
-            'template' => 'faq.html.php',
+            'template' => 'main/faq.html.php',
             'variables' => [
                 'categories' => $categories
             ],
