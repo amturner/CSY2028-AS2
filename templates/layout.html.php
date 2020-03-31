@@ -18,7 +18,8 @@
 		</section>
 	</header>
     <?=$nav;?>
-<img src="/images/randombanner.php"/>
+	
+	<img src="/images/randombanner.php"/>
     
     <?=$output;?>
 
