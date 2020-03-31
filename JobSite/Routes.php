@@ -8,12 +8,13 @@ class Routes implements \CSY2028\Routes {
         $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id', '\JobSite\Entities\Category');
         // Overwrite the object in $categoriesTable with a new DatabaseTable object using the previous object as a parameter.
         $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id', '\JobSite\Entities\Category', [$categoriesTable]);
-        $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job');
-        $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'user_id', '\JobSite\Entities\User');
+        $applicantsTable = new \CSY2028\DatabaseTable($pdo, 'applicants', 'id', '\JobSite\Entities\Applicant');
+        $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job', [$applicantsTable]);
+        $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id', '\JobSite\Entities\User');
 
         $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable, $categoriesTable);
-        $adminController = new \JobSite\Controllers\AdminController();
-        $userController = new \JobSite\Controllers\UserController($usersTable);
+        $adminController = new \JobSite\Controllers\AdminController($usersTable, $categoriesTable, $jobsTable, $applicantsTable);
+        $userController = new \JobSite\Controllers\UserController($usersTable, $categoriesTable);
 
         $routes = [
             '' => [
@@ -64,17 +65,6 @@ class Routes implements \CSY2028\Routes {
                 ],
                 'login' => true
             ],
-            'admin/adduser' => [
-                'GET' => [
-                    'controller' => $userController,
-                    'function' => 'addUserForm'
-                ],
-                'POST' => [
-                    'controller' => $userController,
-                    'function' => 'addUserSubmit'
-                ],
-                'login' => true
-            ],
             'admin/jobs' => [
                 'GET' => [
                     'controller' => $adminController,
@@ -85,7 +75,7 @@ class Routes implements \CSY2028\Routes {
             'admin/categories' => [
                 'GET' => [
                     'controller' => $adminController,
-                    'function' => 'jobs'
+                    'function' => 'categories'
                 ],
                 'login' => true
             ],
@@ -95,8 +85,18 @@ class Routes implements \CSY2028\Routes {
                     'function' => 'users'
                 ],
                 'login' => true
+            ],
+            'admin/users/adduser' => [
+                'GET' => [
+                    'controller' => $userController,
+                    'function' => 'addUserForm'
+                ],
+                'POST' => [
+                    'controller' => $userController,
+                    'function' => 'addUserSubmit'
+                ],
+                'login' => true
             ]
-
         ];
 
         return $routes;
