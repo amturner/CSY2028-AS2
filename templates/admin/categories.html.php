@@ -3,6 +3,7 @@
 </section>
 
 <section class="right">
+    <?php require 'userpanel.html.php'; ?>
     <h2>Categories</h2>
 
     <a class="new" href="/admin/categories/edit">Add new category</a>

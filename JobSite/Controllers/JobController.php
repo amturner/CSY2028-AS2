@@ -84,16 +84,19 @@ class JobController {
 
         if (isset($_GET['id'])) {
             $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
-
-            return [
-                'layout' => 'sidebarlayout.html.php',
-                'template' => 'admin/editjob.html.php',
-                'variables' => [
-                    'categories' => $categories,
-                    'job' => $job
-                ],
-                'title' => 'Admin Panel - Edit Job'
-            ];
+            if ($job->userId == $_SESSION['id']) {
+                return [
+                    'layout' => 'sidebarlayout.html.php',
+                    'template' => 'admin/editjob.html.php',
+                    'variables' => [
+                        'categories' => $categories,
+                        'job' => $job
+                    ],
+                    'title' => 'Admin Panel - Edit Job'
+                ];
+            } 
+            else
+                header('Location: /admin/jobs');  
         }
         else {
             return [

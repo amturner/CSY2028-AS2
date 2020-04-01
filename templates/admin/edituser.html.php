@@ -3,6 +3,7 @@
 </section>
 
 <section class="right">
+    <?php require 'userpanel.html.php'; ?>
     <h2><?=(isset($_GET['id'])) ? 'Edit user' : 'Add user';?></h2>
     <?php if (isset($errors) && count($errors) > 0): ?>
         <div class="errors">

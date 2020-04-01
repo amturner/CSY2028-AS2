@@ -3,6 +3,7 @@
 </section>
 
 <section class="right">
+    <?php require 'userpanel.html.php'; ?>
     <h2>Applicants for <?=$title;?></h2>
 
     <table>

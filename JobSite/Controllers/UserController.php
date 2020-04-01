@@ -169,6 +169,7 @@ class UserController {
                 if ($user[0]->administrator == 1)
                     $_SESSION['isAdmin'] = true;
 
+                $_SESSION['username'] = $user[0]->username;
                 $_SESSION['id'] = $user[0]->id;
 
                 $_SESSION['loggedIn'] = true;
@@ -205,6 +206,7 @@ class UserController {
         //session_start();
         unset($_SESSION['loggedIn']);
         unset($_SESSION['isAdmin']);
+        unset($_SESSION['username']);
         unset($_SESSION['id']);
         //header('Location: /admin/logout');
 

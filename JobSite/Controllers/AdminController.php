@@ -29,7 +29,7 @@ class AdminController {
     public function jobs() {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
-        if (isset($_GET['filterBy']) && $_GET['filterBy'] != 'None') {
+        if (isset($_GET['filterBy']) && $_GET['filterBy'] != 'All') {
             $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['filterBy'])));
 
             if (!empty($categoriesByFilter)) {

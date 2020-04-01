@@ -3,6 +3,7 @@
 </section>
 
 <section class="right">
+    <?php require 'userpanel.html.php'; ?>
     <h2>Jobs</h2>
 
     <a class="new" href="/admin/jobs/edit">Add new job</a>
@@ -13,7 +14,7 @@
                 <?php if (isset($_GET['filterBy']) && isset($categoryName)): ?>
                     <option selected="selected" value="<?=ucwords(urlencode($categoryName));?>"><?=ucwords(urldecode($categoryName));?></option>
                 <?php endif; ?>
-            <option value="None">None</option>
+            <option value="All">All</option>
             <?php foreach ($categories as $category): ?>
                 <?php if (htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8') != ucwords(urldecode($_GET['filterBy']))): ?>
                     <option value="<?=ucwords(urlencode(htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8')));?>"><?=htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8');?></option>

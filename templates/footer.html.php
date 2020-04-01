@@ -1,0 +1,1 @@
+&copy; Jo's Jobs <?=date('Y');?>

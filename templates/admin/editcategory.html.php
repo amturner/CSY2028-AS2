@@ -3,6 +3,7 @@
 </section>
 
 <section class="right">
+    <?php require 'userpanel.html.php'; ?>
     <h2><?=(isset($_GET['id'])) ? 'Edit Category' : 'Add Category' ;?></h2>
 
     <form action="" method="POST">

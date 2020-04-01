@@ -116,6 +116,10 @@ table td input[type="submit"] {margin: 0; float: right; width: auto; padding: au
 a:hover {color: #ccc !important;}
 
 .right {padding: 20px;}
+.right .user-panel p {
+	margin: auto 0;
+	text-align: right;
+}
 
 main h1 {color: #666;}
 

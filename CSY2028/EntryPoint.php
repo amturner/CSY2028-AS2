@@ -10,6 +10,9 @@ class EntryPoint {
     public function run() {
         $route = ltrim(explode('?', $_SERVER['REQUEST_URI'])[0], '/');
 
+        if ($route != '' && $route[strlen($route)-1] == '/')
+            header('Location: /' . rtrim($route, '/'));
+
 		$method = $_SERVER['REQUEST_METHOD'];
 		
 		$routes = $this->routes->getRoutes();
