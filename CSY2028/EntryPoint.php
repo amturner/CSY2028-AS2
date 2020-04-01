@@ -14,9 +14,11 @@ class EntryPoint {
 		
 		$routes = $this->routes->getRoutes();
 
-		if (isset($routes[$route]['login'])) {
+		if (isset($routes[$route]['login']))
 			$this->routes->checkLogin();
-		}
+
+        if (isset($routes[$route]['admin']))
+            $this->routes->checkAdmin();
 
 		$controller = $routes[$route][$method]['controller'];
         $functionName = $routes[$route][$method]['function'];
@@ -28,7 +30,7 @@ class EntryPoint {
 
         $title = $page['title'];
 
-        require '../templates/layout.html.php';
+        require '../templates/' . $page['layout'];
     }
 
     public function loadTemplate($fileName, $templateVars) {

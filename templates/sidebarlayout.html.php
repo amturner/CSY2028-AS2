@@ -17,11 +17,16 @@
 
 		</section>
 	</header>
-    <?=$nav;?>
+
+	<nav>
+		<?=$nav;?>
+	</nav>
 	
 	<img src="/images/randombanner.php"/>
-    
-    <?=$output;?>
+	
+	<main class="sidebar">
+		<?=$output;?>
+	</main>
 
 	<footer>
 		&copy; Jo's Jobs <?=date('Y');?>

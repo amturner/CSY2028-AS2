@@ -4,18 +4,24 @@ class Routes implements \CSY2028\Routes {
     public function getRoutes() {
         require '../dbConnection.php';
         
-        // Create a new DatabaseTable object in $categoriesTable.
-        $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id', '\JobSite\Entities\Category');
-        // Overwrite the object in $categoriesTable with a new DatabaseTable object using the previous object as a parameter.
-        $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id', '\JobSite\Entities\Category', [$categoriesTable]);
-        $applicantsTable = new \CSY2028\DatabaseTable($pdo, 'applicants', 'id', '\JobSite\Entities\Applicant');
-        $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job', [$applicantsTable]);
-        $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id', '\JobSite\Entities\User');
+        // Create new DatabaseTable objects.
+        $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id');
+        $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id');
+        $applicantsTable = new \CSY2028\DatabaseTable($pdo, 'applicants', 'id');
+        $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id');
 
+        // Redefine DatabaseTable objects with entity class and parameters.
+        $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id', '\JobSite\Entities\Category', [$categoriesTable, $jobsTable]);
+        $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job', [$applicantsTable, $categoriesTable]);
+
+        // Create new controller objects.
         $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable, $categoriesTable);
         $adminController = new \JobSite\Controllers\AdminController($usersTable, $categoriesTable, $jobsTable, $applicantsTable);
+        $categoryController = new \JobSite\Controllers\CategoryController($categoriesTable);
+        $jobController = new \JobSite\Controllers\JobController($jobsTable, $categoriesTable);
         $userController = new \JobSite\Controllers\UserController($usersTable, $categoriesTable);
 
+        // Define routes.
         $routes = [
             '' => [
                 'GET' => [
@@ -72,30 +78,79 @@ class Routes implements \CSY2028\Routes {
                 ],
                 'login' => true
             ],
+            'admin/jobs/applicants' => [
+                'GET' => [
+                    'controller' => $jobController,
+                    'function' => 'listApplicants'
+                ],
+                'login' => true
+            ],
+            'admin/jobs/edit' => [
+                'GET' => [
+                    'controller' => $jobController,
+                    'function' => 'editJobForm'
+                ],
+                'POST' => [
+                    'controller' => $jobController,
+                    'function' => 'editJobSubmit'
+                ],
+                'login' => true
+            ],
             'admin/categories' => [
                 'GET' => [
                     'controller' => $adminController,
                     'function' => 'categories'
                 ],
-                'login' => true
+                'login' => true,
+                'admin' => true
+            ],
+            'admin/categories/edit' => [
+                'GET' => [
+                    'controller' => $categoryController,
+                    'function' => 'editCategoryForm'
+                ],
+                'POST' => [
+                    'controller' => $categoryController,
+                    'function' => 'editCategorySubmit'
+                ],
+                'login' => true,
+                'admin' => true
+            ],
+            'admin/categories/delete' => [
+                'POST' => [
+                    'controller' => $categoryController,
+                    'function' => 'deleteCategory'
+                ],
+                'login' => true,
+                'admin' => true
             ],
             'admin/users' => [
                 'GET' => [
                     'controller' => $adminController,
                     'function' => 'users'
                 ],
-                'login' => true
+                'login' => true,
+                'admin' => true
             ],
-            'admin/users/adduser' => [
+            'admin/users/edit' => [
                 'GET' => [
                     'controller' => $userController,
-                    'function' => 'addUserForm'
+                    'function' => 'editUserForm'
                 ],
                 'POST' => [
                     'controller' => $userController,
-                    'function' => 'addUserSubmit'
+                    'function' => 'editUserSubmit'
                 ],
-                'login' => true
+                'login' => true,
+                'admin' => true
+            ],
+            'admin/users/delete' => [
+                'POST' => [
+                    'controller' => $userController,
+                    'function' => 'deleteUser'
+                ],
+                'login' => true,
+                'admin' => true
             ]
         ];
 
@@ -104,8 +159,14 @@ class Routes implements \CSY2028\Routes {
 
 	public function checkLogin() {
 		session_start();
-		if (!isset($_SESSION['loggedIn'])) {
+		if (!isset($_SESSION['loggedIn']))
 			header('Location: /admin/login');
-		}
-	}
+    }
+    
+    public function checkAdmin() {
+        if (!isset($_SESSION['isAdmin'])) {
+            echo 'true';
+            header('Location: /admin');
+        }
+    }
 }

@@ -1,8 +1,8 @@
-<main class="sidebar">
-	<section class="left">
-        <?php require 'jobnav.html.php'; ?>
-	</section>
-	<section class="right">
+<section class="left">
+    <?php require 'jobnav.html.php'; ?>
+</section>
+
+<section class="right">
     <?php if (isset($categoryName) && isset($categoryName)): ?>
         <?php if (isset($jobs) && count($jobs) > 0): ?>
             <h1><?=$categoryName;?> Jobs</h1>
@@ -25,7 +25,7 @@
         <?php else: ?>
         <p>rl</p>
         <?php endif; ?>
-    <?php elseif (isset($_GET['category']) && !isset($categoryName) && !isset($categoryName)): ?>
+    <?php elseif (isset($_GET['category']) && !isset($categoryName)): ?>
         <h1>Category Not Found</h1>
         <p>The category that you have specified does not exist. Please ensure the category name is correct before trying again.</p>
     <?php else: ?>
@@ -33,5 +33,4 @@
 
         <?php require 'jobnav.html.php'; ?>
     <?php endif; ?>
-    </section>
-</main>
+</section>

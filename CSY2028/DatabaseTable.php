@@ -54,7 +54,21 @@ class DatabaseTable {
 
     // Function to update an existing record in the specified database table.
     public function updateRecord($record) {
+        $query = 'UPDATE ' . $this->table . ' SET ';
 
+        $parameters = [];
+        foreach ($record as $key => $value) {
+               $parameters[] = $key . ' = :' .$key;
+        }
+
+        $query .= implode(', ', $parameters);
+        $query .= ' WHERE ' . $this->primaryKey . ' = :primaryKey';
+
+        $record['primaryKey'] = $record[$this->primaryKey];
+
+        $stmt = $this->pdo->prepare($query);
+
+        $stmt->execute($record);
     }
 
     // Function to delete a record from the specified database table.
@@ -72,7 +86,7 @@ class DatabaseTable {
         try {
             $this->insertRecord($record); // Insert new record.
         }
-        catch (PDOException $e) {
+        catch (\PDOException $e) {
             $this->updateRecord($record); // Update existing record.
         }
     }

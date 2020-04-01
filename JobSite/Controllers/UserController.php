@@ -2,36 +2,52 @@
 namespace JobSite\Controllers;
 class UserController {
     private $usersTable;
+    private $categoriesTable;
 
-    public function __construct(\CSY2028\DatabaseTable $usersTable) {
+    public function __construct(\CSY2028\DatabaseTable $usersTable, \CSY2028\DatabaseTable $categoriesTable) {
         $this->usersTable = $usersTable;
+        $this->categoriesTable = $categoriesTable;
     }
 
-    public function addUserSubmit() {
+    public function editUserSubmit() {
         if (isset($_POST['submit'])) {
-            // Assign user input to variables.
-            $username = $_POST['register']['username'];
-            $email = $_POST['register']['email'];
-            $password = $_POST['register']['password'];
+            $categories = $this->categoriesTable->retrieveAllRecords();
+
+            if (isset($_GET['id']))
+                $user = $this->usersTable->retrieveRecord('id', $_GET['id'])[0];
+            else
+                $user = '';
 
             $errors = [];
 
             // Validate user input
-            if ($username != '') {
-                $existingUsername = $this->usersTable->retrieveRecord('username', $username);
+            if ($_POST['user']['username'] != '') {
+                $existingUsername = $this->usersTable->retrieveRecord('username', htmlspecialchars(strip_tags($_POST['user']['username']), ENT_QUOTES, 'UTF-8'));
+                
+                if (isset($_GET['id'])) {
+                    $currentUsername = $this->usersTable->retrieveRecord('id', $_GET['id'])[0]->username;
 
-                if (!empty($existingUsername))
-                    $errors[] = 'The specified username already is already in use.';
+                    if (!empty($existingUsername) && htmlspecialchars(strip_tags($_POST['user']['username']), ENT_QUOTES, 'UTF-8') != $currentUsername)
+                        $errors[] = 'The specified username already is already in use.';
+                }
             }
             else
                 $errors[] = 'The username cannot be blank.';
 
-            if ($email != '') {
-                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $existingEmail = $this->usersTable->retrieveRecord('email', $email);
+            if ($_POST['user']['email'] != '') {
+                if (filter_var($_POST['user']['email'], FILTER_VALIDATE_EMAIL)) {
+                    $existingEmail = $this->usersTable->retrieveRecord('email', $_POST['user']['email']);
 
-                    if (!empty($existingEmail))
-                        $errors[] = 'The specified email address is already in use.';
+                    if (isset($_GET['id'])) {
+                        $currentEmail = $this->usersTable->retrieveRecord('id', $_GET['id'])[0]->email;
+    
+                        if (!empty($existingEmail) && $_POST['user']['email'] != $currentEmail)
+                            $errors[] = 'The specified email address is already in use.';
+                    }
+                    else {
+                        if (!empty($existingEmail))
+                            $errors[] = 'The specified email address is already in use.';
+                    }
                 }
                 else
                     $errors[] = 'The email address is invalid.';
@@ -39,46 +55,88 @@ class UserController {
             else
                 $errors[] = 'The email address cannot be blank.';
             
-            if ($password == '')
+            if (!isset($_GET['id']) && $_POST['user']['password'] == '')
                 $errors[] = 'The password cannot be blank.';
 
             // Create new user account if there are no errors.
             if (count($errors) == 0) {
-                $values = [
-                    'username' => $username,
-                    'email' => $email,
-                    'password' => password_hash($username . $password, PASSWORD_DEFAULT)
-                ];
+                if (isset($_GET['id']))
+                    $pageName = 'User Updated';
+                else
+                    $pageName = 'User Added';
+
+                $_POST['user']['username'] = htmlspecialchars(strip_tags($_POST['user']['username']), ENT_QUOTES, 'UTF-8');
+
+                if (isset($_GET['id']) && $_POST['user']['password'] == '')
+                    unset($_POST['user']['password']);
+                else
+                    $_POST['user']['password'] = password_hash($_POST['user']['username'] . $_POST['user']['password'], PASSWORD_DEFAULT);
     
-                $this->usersTable->save($values);
+                $this->usersTable->save($_POST['user']);
     
                 return [
-                    'template' => 'admin/addusersuccess.html.php',
+                    'layout' => 'sidebarlayout.html.php',
+                    'template' => 'admin/editusersuccess.html.php',
                     'variables' => [
-                        'username' => $username
+                        'categories' => $categories,
+                        'username' => htmlspecialchars(strip_tags($_POST['user']['username']), ENT_QUOTES, 'UTF-8')
                     ],
-                    'title' => 'User Created'
+                    'title' => 'Admin Panel - ' . $pageName
                 ];
             }
-            // Display the registration from with any generated errors.
+            // Display the registration form with any generated errors.
             else {
+                if (isset($_GET['id']))
+                    $pageName = 'Edit User';
+                else
+                    $pageName = 'Add User';
+
                 return [
-                    'template' => 'admin/adduser.html.php',
+                    'layout' => 'sidebarlayout.html.php',
+                    'template' => 'admin/edituser.html.php',
                     'variables' => [
-                        'errors' => $errors
+                        'categories' => $categories,
+                        'errors' => $errors,
+                        'user' => $user
                     ],
-                    'title' => 'Create User'
+                    'title' => 'Admin Panel ' . $pageName
                 ];
             }
         }
     }
 
-    public function addUserForm() {
-        return [
-			'template' => 'admin/adduser.html.php',
-			'variables' => [],
-			'title' => 'Create Account'
-		];
+    public function editUserForm() {
+        $categories = $this->categoriesTable->retrieveAllRecords();
+
+        if (isset($_GET['id'])) {
+            $user = $this->usersTable->retrieveRecord('id', $_GET['id'])[0];
+
+            return [
+                'layout' => 'sidebarlayout.html.php',
+                'template' => 'admin/edituser.html.php',
+                'variables' => [
+                    'categories' => $categories,
+                    'user' => $user
+                ],
+                'title' => 'Admin Panel - Edit User'
+            ];
+        }
+        else {
+            return [
+                'layout' => 'sidebarlayout.html.php',
+                'template' => 'admin/edituser.html.php',
+                'variables' => [
+                    'categories' => $categories
+                ],
+                'title' => 'Admin Panel - Add User'
+            ];
+        }
+    }
+
+    public function deleteUser() {
+        $this->usersTable->deleteRecord($_POST['user']['id']);
+
+        header('Location: /admin/users');
     }
 
     public function loginSubmit() {
@@ -110,8 +168,6 @@ class UserController {
 
                 if ($user[0]->administrator == 1)
                     $_SESSION['isAdmin'] = true;
-                else
-                    $_SESSION['isAdmin'] = false;
 
                 $_SESSION['id'] = $user[0]->id;
 
@@ -120,6 +176,7 @@ class UserController {
             }
             else {
                 return [
+                    'layout' => 'mainlayout.html.php',
                     'template' => 'admin/login.html.php',
                     'variables' => [
                         'error' => $error
@@ -134,6 +191,7 @@ class UserController {
         session_start();
         if (!isset($_SESSION['loggedIn'])) {
             return [
+                'layout' => 'mainlayout.html.php',
                 'template' => 'admin/login.html.php',
                 'variables' => [],
                 'title' => 'Log in'
@@ -151,6 +209,7 @@ class UserController {
         //header('Location: /admin/logout');
 
         return [
+            'layout' => 'mainlayout.html.php',
             'template' => 'admin/logout.html.php',
             'variables' => [],
             'title' => 'Log out'

@@ -68,11 +68,11 @@ pre code {display: block;}
 
 footer {background-color: #4b72ad; padding: 10px; color: white;}
 
-form select, form label, form input, form textarea {float: left; width: 200px; padding: 10px; margin-top: 20px;}
+form select, form label, form input, form button, form textarea {float: left; width: 200px; padding: 10px; margin-top: 20px;}
 form label {clear: left;}
 textarea {height: 100px;}
 form input[type="text"], form input[type="password"], textarea {color: #999; font-family: verdana, sans-serif}
-input[type="submit"] {clear: both; margin-left: 220px; width: 220px;}
+input[type="submit"], button {clear: both; margin-left: 220px; width: 220px;}
 
 
 .left ul {list-style-type: none }
@@ -128,4 +128,24 @@ main img {display: block;}
 form .required::after {
 	content: '*';
 	color:red;
+}
+
+.filter {
+	display: flex;
+	flex-direction: row;
+	margin-top: 1em;
+	justify-content: flex-end;
+}
+.filter label, .filter select, .filter button, .filter input[type=submit] {
+	margin: 0;
+}
+.filter label {
+	width: auto;
+}
+.filter select, .filter button, .filter input[type=submit] {
+	margin-left: 1em;
+}
+.filter button, .filter input[type=submit] {
+	width: auto;
+	padding: 0 2em;
 }
