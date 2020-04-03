@@ -117,6 +117,7 @@ class JobController {
     public function editJobSubmit() {
         if (isset($_POST['submit'])) {
             $categories = $this->categoriesTable->retrieveAllRecords();
+            $locations = $this->locationsTable->retrieveAllRecords('town', 'ASC');
 
             if (isset($_GET['id']))
                 $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
@@ -148,6 +149,10 @@ class JobController {
                 else
                     $pageName = 'Job Added';
 
+                if ($job != '')
+                    if ($job->active == 0)
+                            $_POST['job']['active'] = 1;
+
                 $this->jobsTable->save($_POST['job']);
 
                 return [
@@ -155,6 +160,7 @@ class JobController {
                     'template' => 'admin/editjobsuccess.html.php',
                     'variables' => [
                         'categories' => $categories,
+                        'locations' => $locations,
                         'title' => htmlspecialchars(strip_tags($_POST['job']['title']), ENT_QUOTES, 'UTF-8')
                     ],
                     'title' => 'Admin Panel - ' . $pageName
@@ -172,6 +178,7 @@ class JobController {
                     'template' => 'admin/editjob.html.php',
                     'variables' => [
                         'categories' => $categories,
+                        'locations' => $locations,
                         'errors' => $errors,
                         'job' => $job
                     ],
@@ -187,39 +194,58 @@ class JobController {
 
         if (isset($_GET['id'])) {
             $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
-            if ($job->userId == $_SESSION['id']) {
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'admin/editjob.html.php',
-                    'variables' => [
-                        'categories' => $categories,
-                        'locations' => $locations,
-                        'job' => $job
-                    ],
-                    'title' => 'Admin Panel - Edit Job'
+            if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
+                
+                $variables = [
+                    'categories' => $categories,
+                    'locations' => $locations,
+                    'job' => $job
                 ];
+                
+                $title = 'Edit Job';
             } 
             else
                 header('Location: /admin/jobs');  
         }
         else {
-            return [
-                'layout' => 'sidebarlayout.html.php',
-                'template' => 'admin/editjob.html.php',
-                'variables' => [
-                    'categories' => $categories,
-                    'locations' => $locations,
-                    'towns' => $towns
-                ],
-                'title' => 'Admin Panel - Add Job'
+            $variables = [
+                'categories' => $categories,
+                'locations' => $locations
             ];
+
+            $title = 'Add Job';
         }
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => 'admin/editjob.html.php',
+            'variables' => $variables,
+            'title' => 'Admin Panel - ' . $title
+        ];
+    }
+
+    public function deleteJob() {
+        $this->jobsTable->deleteRecord($_POST['id']);
+
+        header('Location: /admin/jobs');
     }
 
     public function listJobs() {
         $categories = $this->categoriesTable->retrieveAllRecords();
         $locations = $this->locationsTable->retrieveAllRecords('town', 'ASC');
-        
+        $allJobs = $this->jobsTable->retrieveAllRecords();
+
+        foreach ($allJobs as $job) {
+            if (date('Y-m-d') > $job->closingDate) {
+                $values = [
+                    'id' => $job->id,
+                    'active' => 0
+                ];
+
+                $this->jobsTable->save($values);
+            }
+        }
+
         if (isset($_GET['category']) && $_GET['category'] != '') {
             $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category'])));
 
@@ -236,14 +262,14 @@ class JobController {
 
                         foreach ($jobs as $job) {
                             foreach ($locations as $location) {
-                                if ($job->locationId == $location->id) {
+                                if ($job->locationId == $location->id && $job->active == 1) {
                                     $filteredLocations[] = $location->town;
                                 }
                             }
                         }
 
                         foreach ($jobs as $job)
-                            if ($job->locationId == $locationByFilter->id)
+                            if ($job->locationId == $locationByFilter->id && $job->active == 1)
                                 $filteredJobs[] = $job;
 
                         $locationsNoId = [];
@@ -284,16 +310,26 @@ class JobController {
                     $categoryName = $category->name;
 
                     $filteredLocations = [];
+                    $filteredJobs = [];
 
                     foreach ($jobs as $job) {
                         foreach ($locations as $location) {
-                            if ($job->locationId == $location->id) {
+                            if ($job->locationId == $location->id && $job->active == 1) {
                                 $filteredLocations[] = $location->town;
                             }
                         }
                     }
 
+                    foreach ($jobs as $job) {
+                        foreach ($locations as $location) {
+                            if ($job->locationId == $location->id && $job->active == 1) {
+                                $filteredJobs[] = $job;
+                            }
+                        }
+                    }
+
                     $locations = array_unique($filteredLocations);
+                    $jobs = $filteredJobs;
 
                     $variables = [
                         'categoryName' => $categoryName,

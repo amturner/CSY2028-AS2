@@ -25,7 +25,7 @@
                 <td>
                     <form method="post" action="/admin/categories/delete">
                         <input type="hidden" name="category[id]" value="<?=$category->id;?>" />
-                        <input type="submit" name="submit" value="Delete" />
+                        <input type="submit" name="submit" value="Delete" <?=($category->getJobsCount() > 0) ? 'disabled' : '';?>/>
                     </form>
                 </td>
             </tr>

@@ -14,19 +14,27 @@ class EntryPoint {
             header('Location: /' . rtrim($route, '/'));
 
 		$method = $_SERVER['REQUEST_METHOD'];
-		
+
 		$routes = $this->routes->getRoutes();
 
 		if (isset($routes[$route]['login']))
 			$this->routes->checkLogin();
 
-        if (isset($routes[$route]['admin']))
-            $this->routes->checkAdmin();
+        $this->routes->updateRole();
+
+        if (isset($routes[$route]['restricted']))
+            if (!$this->routes->checkAccess())
+                header('Location: /admin/access-restricted');
 
 		$controller = $routes[$route][$method]['controller'];
         $functionName = $routes[$route][$method]['function'];
+
+        if (isset($routes[$route][$method]['parameters']))
+            $parameters = $routes[$route][$method]['parameters'];
+        else
+            $parameters = '';
         
-        $page = $controller->$functionName();
+        $page = $controller->$functionName($parameters);
 
         $nav = $this->loadTemplate('../templates/nav.html.php', $page['variables']);
         $output = $this->loadTemplate('../templates/' . $page['template'], $page['variables']);

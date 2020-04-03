@@ -13,6 +13,7 @@ class Job {
     public $categoryId;
     public $locationId;
     public $userId;
+    public $active;
 
     public function __construct(\CSY2028\DatabaseTable $locationsTable, \CSY2028\DatabaseTable $applicantsTable, \CSY2028\DatabaseTable $categoriesTable) {
         $this->locationsTable = $locationsTable;

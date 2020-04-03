@@ -6,7 +6,7 @@
     <?php if (isset($categoryName) && isset($jobs) || isset($categoryName) && isset($locationTown) && isset($jobs)): ?>
         <form class="filter" action="" method="get">
             <input type="hidden" name="category" value="<?=(isset($categoryName)) ? $categoryName : '';?>" />
-            <label>Location: </label>
+            <label>Location</label>
             <select name="location">
                 <?php if (isset($_GET['location']) && isset($locationTown) && count($locations) > 1): ?>
                     <option selected="selected" value="<?=ucwords(urlencode($locationTown));?>"><?=ucwords(urldecode($locationTown));?></option>
@@ -33,6 +33,7 @@
                             <p><?=nl2br($job->description);?></p>
 
                             <a class="more" href="/jobs/apply?id=<?=$job->id;?>">Apply for this job</a>
+                            <h4>Closing Date: <?=$job->getClosingDate();?></h4>
                         </div>
                     </li>
                 <?php endforeach; ?>

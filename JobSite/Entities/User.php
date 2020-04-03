@@ -6,7 +6,7 @@ class User {
     public $surname;
     public $email;
     public $password;
-    public $administrator;
+    public $role;
     public $active;
 
     public function getFullName($order) {

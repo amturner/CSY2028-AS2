@@ -82,10 +82,32 @@ class Routes implements \CSY2028\Routes {
                 ],
                 'login' => true
             ],
+            'admin/access-restricted' => [
+                'GET' => [
+                    'controller' => $adminController,
+                    'function' => 'accessRestricted'
+                ]
+            ],
             'admin/jobs' => [
                 'GET' => [
                     'controller' => $adminController,
                     'function' => 'jobs'
+                ],
+                'login' => true
+            ],
+            'admin/jobs/active' => [
+                'GET' => [
+                    'controller' => $adminController,
+                    'function' => 'jobs',
+                    'parameters' => ['active']
+                ],
+                'login' => true
+            ],
+            'admin/jobs/archive' => [
+                'GET' => [
+                    'controller' => $adminController,
+                    'function' => 'jobs',
+                    'parameters' => ['archived']
                 ],
                 'login' => true
             ],
@@ -107,13 +129,19 @@ class Routes implements \CSY2028\Routes {
                 ],
                 'login' => true
             ],
+            'admin/jobs/delete' => [
+                'POST' => [
+                    'controller' => $jobController,
+                    'function' => 'deleteJob'
+                ]
+            ],
             'admin/categories' => [
                 'GET' => [
                     'controller' => $adminController,
                     'function' => 'categories'
                 ],
                 'login' => true,
-                'admin' => true
+                'restricted' => true
             ],
             'admin/categories/edit' => [
                 'GET' => [
@@ -125,7 +153,7 @@ class Routes implements \CSY2028\Routes {
                     'function' => 'editCategorySubmit'
                 ],
                 'login' => true,
-                'admin' => true
+                'restricted' => true
             ],
             'admin/categories/delete' => [
                 'POST' => [
@@ -133,7 +161,7 @@ class Routes implements \CSY2028\Routes {
                     'function' => 'deleteCategory'
                 ],
                 'login' => true,
-                'admin' => true
+                'restricted' => true
             ],
             'admin/users' => [
                 'GET' => [
@@ -141,7 +169,7 @@ class Routes implements \CSY2028\Routes {
                     'function' => 'users'
                 ],
                 'login' => true,
-                'admin' => true
+                'restricted' => true
             ],
             'admin/users/edit' => [
                 'GET' => [
@@ -152,8 +180,7 @@ class Routes implements \CSY2028\Routes {
                     'controller' => $userController,
                     'function' => 'editUserSubmit'
                 ],
-                'login' => true,
-                'admin' => true
+                'login' => true
             ],
             'admin/users/delete' => [
                 'POST' => [
@@ -161,7 +188,7 @@ class Routes implements \CSY2028\Routes {
                     'function' => 'deleteUser'
                 ],
                 'login' => true,
-                'admin' => true
+                'restricted' => true
             ]
         ];
 
@@ -174,10 +201,41 @@ class Routes implements \CSY2028\Routes {
 			header('Location: /admin/login');
     }
     
-    public function checkAdmin() {
-        if (!isset($_SESSION['isAdmin'])) {
-            echo 'true';
-            header('Location: /admin');
+    public function updateRole() {
+        if (isset($_SESSION['id'])) {
+            require '../dbConnection.php';
+            $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id', '\JobSite\Entities\User');
+            $user = $usersTable->retrieveRecord('id', $_SESSION['id'])[0];
+    
+            if ($user->role == 3 && !isset($_SESSION['isOwner'])) {
+                $_SESSION['isOwner'] = true;
+                unset($_SESSION['isAdmin']);
+                unset($_SESSION['isEmployee']);
+                unset($_SESSION['isClient']);
+            }
+            elseif ($user->role == 2 && !isset($_SESSION['isAdmin'])) {
+                unset($_SESSION['isOwner']);
+                $_SESSION['isAdmin'] = true;
+                unset($_SESSION['isEmployee']);
+                unset($_SESSION['isClient']);
+            }
+            elseif ($user->role == 1 && !isset($_SESSION['isEmployee'])) {
+                unset($_SESSION['isOwner']);
+                unset($_SESSION['isAdmin']);
+                $_SESSION['isEmployee'] = true;
+                unset($_SESSION['isClient']);
+            }
+            elseif ($user->role == 0 && !isset($_SESSION['isClient'])) {
+                unset($_SESSION['isOwner']);
+                unset($_SESSION['isAdmin']);
+                unset($_SESSION['isEmployee']);
+                $_SESSION['isClient'] = true;
+            }
         }
+    }
+
+    public function checkAccess() {
+        if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']))
+            return true;
     }
 }

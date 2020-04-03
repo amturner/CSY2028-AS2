@@ -19,10 +19,10 @@
         <p class="required">Required: </p>
         <input type="hidden" name="job[id]" value="<?=(isset($_GET['id'])) ? $job->id : '';?>" />
         <label class="required">Title</label>
-        <input type="text" name="job[title]" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8') : '';?>" />
+        <input type="text" name="job[title]" value="<?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['job'])) { echo $_POST['job']['title']; } ?>" />
 
         <label class="required">Description</label>
-        <textarea name="job[description]"><?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($job->description), ENT_QUOTES, 'UTF-8') : '';?></textarea>
+        <textarea name="job[description]"><?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($job->description), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['job'])) { echo $_POST['job']['description']; } ?></textarea>
 
         <label>Location</label>
         <select name="job[locationId]">
@@ -40,7 +40,7 @@
         </select>
 
         <label class="required">Salary</label>
-        <input type="text" name="job[salary]" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($job->salary), ENT_QUOTES, 'UTF-8') : '';?>" />
+        <input type="text" name="job[salary]" value="<?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($job->salary), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['job'])) { echo $_POST['job']['salary']; } ?>" />
 
         <label>Category</label>
         <select name="job[categoryId]">

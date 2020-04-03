@@ -34,6 +34,12 @@ class UserController {
             else
                 $errors[] = 'The username cannot be blank.';
 
+            if ($_POST['user']['firstname'] == '')
+                $errors[] = 'The first name cannot be blank.';
+
+            if ($_POST['user']['surname'] == '')
+                $errors[] = 'The surname cannot be blank.';
+
             if ($_POST['user']['email'] != '') {
                 if (filter_var($_POST['user']['email'], FILTER_VALIDATE_EMAIL)) {
                     $existingEmail = $this->usersTable->retrieveRecord('email', $_POST['user']['email']);
@@ -66,6 +72,8 @@ class UserController {
                     $pageName = 'User Added';
 
                 $_POST['user']['username'] = htmlspecialchars(strip_tags($_POST['user']['username']), ENT_QUOTES, 'UTF-8');
+                $_POST['user']['firstname'] = htmlspecialchars(strip_tags($_POST['user']['firstname']), ENT_QUOTES, 'UTF-8');
+                $_POST['user']['surname'] = htmlspecialchars(strip_tags($_POST['user']['surname']), ENT_QUOTES, 'UTF-8');
 
                 if (isset($_GET['id']) && $_POST['user']['password'] == '')
                     unset($_POST['user']['password']);
@@ -111,15 +119,19 @@ class UserController {
         if (isset($_GET['id'])) {
             $user = $this->usersTable->retrieveRecord('id', $_GET['id'])[0];
 
-            return [
-                'layout' => 'sidebarlayout.html.php',
-                'template' => 'admin/edituser.html.php',
-                'variables' => [
-                    'categories' => $categories,
-                    'user' => $user
-                ],
-                'title' => 'Admin Panel - Edit User'
-            ];
+            if (!empty($user) && (isset($_SESSION['isOwner']) || $_GET['id'] == $_SESSION['id'] || isset($_SESSION['isAdmin']) && ($user->role == 1 || $user->role == 0) || isset($_SESSION['isEmployee']) && $user->role == 0)) {
+                return [
+                    'layout' => 'sidebarlayout.html.php',
+                    'template' => 'admin/edituser.html.php',
+                    'variables' => [
+                        'categories' => $categories,
+                        'user' => $user
+                    ],
+                    'title' => 'Admin Panel - Edit User'
+                ];    
+            }
+            else
+                header('Location: /admin/users');
         }
         else {
             return [
@@ -129,8 +141,17 @@ class UserController {
                     'categories' => $categories
                 ],
                 'title' => 'Admin Panel - Add User'
-            ];
+            ];         
         }
+
+        /*
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => 'admin/edituser.html.php',
+            'variables' => $variables,
+            'title' => 'Admin Panel - Add User'
+        ];
+        */
     }
 
     public function deleteUser() {
@@ -166,8 +187,14 @@ class UserController {
             if ($error == '') {
                 session_start();
 
-                if ($user[0]->administrator == 1)
+                if ($user[0]->role == 3)
+                    $_SESSION['isOwner'] = true;
+                elseif ($user[0]->role == 2)
                     $_SESSION['isAdmin'] = true;
+                elseif ($user[0]->role == 1)
+                    $_SESSION['isEmployee'] = true;
+                else
+                    $_SESSION['isClient'] = true;
 
                 $_SESSION['username'] = $user[0]->username;
                 $_SESSION['id'] = $user[0]->id;
@@ -190,11 +217,14 @@ class UserController {
 
     public function loginForm() {
         session_start();
+        $categories = $this->categoriesTable->retrieveAllRecords();
         if (!isset($_SESSION['loggedIn'])) {
             return [
                 'layout' => 'mainlayout.html.php',
                 'template' => 'admin/login.html.php',
-                'variables' => [],
+                'variables' => [
+                    'categories' => $categories
+                ],
                 'title' => 'Log in'
             ];
         }
@@ -203,17 +233,22 @@ class UserController {
     }
 
     public function logout() {
-        //session_start();
+        $categories = $this->categoriesTable->retrieveAllRecords();
+        
         unset($_SESSION['loggedIn']);
+        unset($_SESSION['isOwner']);
         unset($_SESSION['isAdmin']);
+        unset($_SESSION['isEmployee']);
+        unset($_SESSION['isClient']);
         unset($_SESSION['username']);
         unset($_SESSION['id']);
-        //header('Location: /admin/logout');
 
         return [
             'layout' => 'mainlayout.html.php',
             'template' => 'admin/logout.html.php',
-            'variables' => [],
+            'variables' => [
+                'categories' => $categories
+            ],
             'title' => 'Log out'
         ];
     }
