@@ -86,7 +86,8 @@ class Routes implements \CSY2028\Routes {
                 'GET' => [
                     'controller' => $adminController,
                     'function' => 'accessRestricted'
-                ]
+                ],
+                'login' => true
             ],
             'admin/jobs' => [
                 'GET' => [
