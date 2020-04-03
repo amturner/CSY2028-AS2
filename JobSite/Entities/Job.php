@@ -24,6 +24,14 @@ class Job {
         return $this->categoriesTable->retrieveRecord('id', $this->categoryId)[0]->name;
     }
 
+    public function getFullLocation() {
+        $town = $this->locationsTable->retrieveRecord('id', $this->locationId)[0]->town;
+        $county = $this->locationsTable->retrieveRecord('id', $this->locationId)[0]->county;
+        $country = $this->locationsTable->retrieveRecord('id', $this->locationId)[0]->country;
+        
+        return $town . ', ' . $county . ', ' . $country;
+    }
+
     public function getTown() {
         return $this->locationsTable->retrieveRecord('id', $this->locationId)[0]->town;
     }
