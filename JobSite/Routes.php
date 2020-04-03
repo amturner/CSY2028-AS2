@@ -8,7 +8,7 @@ class Routes implements \CSY2028\Routes {
         $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id');
         $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id');
         $applicantsTable = new \CSY2028\DatabaseTable($pdo, 'applicants', 'id');
-        $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id');
+        $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id', '\JobSite\Entities\User');
         $locationsTable = new \CSY2028\DatabaseTable($pdo, 'locations', 'id');
 
         // Redefine DatabaseTable objects with entity class and parameters.
