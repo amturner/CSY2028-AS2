@@ -1,0 +1,19 @@
+<?php
+namespace JobSite\Entities;
+class User {
+    public $id;
+    public $firstname;
+    public $surname;
+    public $email;
+    public $password;
+    public $administrator;
+    public $active;
+
+    public function getFullName($order) {
+        if ($order == 'firstname')
+            return $this->firstname . ' ' . $this->surname;
+        elseif ($order == 'surname')
+            return $this->surname . ', ' . $this->firstname;
+    }
+}
+?>
