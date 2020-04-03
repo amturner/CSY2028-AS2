@@ -3,6 +3,7 @@
 </section>
 
 <section class="right">
+    <?php require 'userpanel.html.php'; ?>
     <h2>Users</h2>
 
     <a class="new" href="/admin/users/edit">Add new user</a>

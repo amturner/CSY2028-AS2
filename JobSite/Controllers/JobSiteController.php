@@ -22,40 +22,6 @@ class JobSiteController {
         ];
     }
 
-    public function jobs() {
-        if (isset($_GET['category']) && $_GET['category'] != '') {
-            $categoryId = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category'])));
-            $categoryName = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category'])));
-        }
-
-        $categories = $this->categoriesTable->retrieveAllRecords();
-
-        if (isset($categoryId[0]) && isset($categoryName[0])) {
-            $jobs = $this->jobsTable->retrieveRecord('categoryId', $categoryId[0]->id);
-    
-            return [
-                'layout' => 'sidebarlayout.html.php',
-                'template' => 'main/jobs.html.php',
-                'variables' => [
-                    'categoryName' => $categoryName[0]->name,
-                    'jobs' => $jobs,
-                    'categories' => $categories
-                ],
-                'title' => 'Jobs'
-            ];
-        }
-        else {
-            return [
-                'layout' => 'sidebarlayout.html.php',
-                'template' => 'main/jobs.html.php',
-                'variables' => [
-                    'categories' => $categories
-                ],
-                'title' => 'Jobs'
-            ];
-        }
-    }
-
     public function about() {
         $categories = $this->categoriesTable->retrieveAllRecords();
 

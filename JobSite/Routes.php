@@ -9,16 +9,17 @@ class Routes implements \CSY2028\Routes {
         $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id');
         $applicantsTable = new \CSY2028\DatabaseTable($pdo, 'applicants', 'id');
         $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id');
+        $locationsTable = new \CSY2028\DatabaseTable($pdo, 'locations', 'id');
 
         // Redefine DatabaseTable objects with entity class and parameters.
         $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id', '\JobSite\Entities\Category', [$categoriesTable, $jobsTable]);
-        $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job', [$applicantsTable, $categoriesTable]);
+        $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job', [$locationsTable, $applicantsTable, $categoriesTable]);
 
         // Create new controller objects.
         $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable, $categoriesTable);
         $adminController = new \JobSite\Controllers\AdminController($usersTable, $categoriesTable, $jobsTable, $applicantsTable);
         $categoryController = new \JobSite\Controllers\CategoryController($categoriesTable);
-        $jobController = new \JobSite\Controllers\JobController($jobsTable, $categoriesTable);
+        $jobController = new \JobSite\Controllers\JobController($jobsTable, $applicantsTable, $locationsTable, $categoriesTable);
         $userController = new \JobSite\Controllers\UserController($usersTable, $categoriesTable);
 
         // Define routes.
@@ -31,8 +32,18 @@ class Routes implements \CSY2028\Routes {
             ],
             'jobs' => [
                 'GET' => [
-                    'controller' => $jobSiteController,
-                    'function' => 'jobs'
+                    'controller' => $jobController,
+                    'function' => 'listJobs'
+                ]
+            ],
+            'jobs/apply' => [
+                'GET' => [
+                    'controller' => $jobController,
+                    'function' => 'applyForm'
+                ],
+                'POST' => [
+                    'controller' => $jobController,
+                    'function' => 'applySubmit'
                 ]
             ],
             'about' => [

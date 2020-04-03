@@ -24,26 +24,37 @@
         <label class="required">Description</label>
         <textarea name="job[description]"><?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($job->description), ENT_QUOTES, 'UTF-8') : '';?></textarea>
 
-        <label class="required">Location</label>
-        <input type="text" name="job[location]" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($job->location), ENT_QUOTES, 'UTF-8') : '';?>" />
+        <label>Location</label>
+        <select name="job[locationId]">
+            <?php foreach ($locations as $location): ?>
+                <?php if (isset($_GET['id'])): ?>
+                    <?php if ($job->getTown() == $location->town): ?>
+                        <option selected="selected" value="<?=$location->id;?>"><?=htmlspecialchars(strip_tags($location->town), ENT_QUOTES, 'UTF-8');?></option>
+                    <?php else: ?>
+                        <option value="<?=$location->id;?>"><?=htmlspecialchars(strip_tags($location->town), ENT_QUOTES, 'UTF-8');?></option>
+                    <?php endif; ?>
+                <?php else: ?>    
+                    <option value="<?=$location->id;?>"><?=htmlspecialchars(strip_tags($location->town), ENT_QUOTES, 'UTF-8');?></option>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </select>
 
         <label class="required">Salary</label>
         <input type="text" name="job[salary]" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($job->salary), ENT_QUOTES, 'UTF-8') : '';?>" />
 
         <label>Category</label>
         <select name="job[categoryId]">
-        <?php foreach ($categories as $category): ?>
-            <?php if (isset($_GET['id'])): ?>
-                <?php if ($job->categoryId == $category->id): ?>
-                    <option selected="selected" value="<?=$category->id;?>"><?=htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8');?></option>
-                <?php else: ?>
+            <?php foreach ($categories as $category): ?>
+                <?php if (isset($_GET['id'])): ?>
+                    <?php if ($job->categoryId == $category->id): ?>
+                        <option selected="selected" value="<?=$category->id;?>"><?=htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8');?></option>
+                    <?php else: ?>
+                        <option value="<?=$category->id;?>"><?=htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8');?></option>
+                    <?php endif; ?>
+                <?php else: ?>    
                     <option value="<?=$category->id;?>"><?=htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8');?></option>
                 <?php endif; ?>
-            <?php else: ?>    
-                <option value="<?=$category->id;?>"><?=htmlspecialchars(strip_tags($category->name), ENT_QUOTES, 'UTF-8');?></option>
-            <?php endif; ?>
-        <?php endforeach; ?>
-
+            <?php endforeach; ?>
         </select>
 
         <label class="required">Closing Date</label>

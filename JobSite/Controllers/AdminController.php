@@ -28,47 +28,69 @@ class AdminController {
 
     public function jobs() {
         $categories = $this->categoriesTable->retrieveAllRecords();
+        $allJobs = $this->jobsTable->retrieveAllRecords();
 
-        if (isset($_GET['filterBy']) && $_GET['filterBy'] != 'All') {
-            $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['filterBy'])));
-
-            if (!empty($categoriesByFilter)) {
-                $category = $categoriesByFilter[0];
+        if (isset($_GET['category']) && $_GET['category'] != 'All') {
+            if (!empty($this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category']))))) {
+                $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category'])));
+                $categoryByFilter = $categoriesByFilter[0];
 
                 if (isset($_SESSION['isAdmin'])) {
-                    $jobs = $this->jobsTable->retrieveRecord('categoryId', $category->id);
+                    $jobs = $this->jobsTable->retrieveAllRecords();
                 }
                 else {
                     $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
-
-                    $filteredJobs = [];
-
-                    foreach ($jobs as $job)
-                        if ($job->categoryId == $category->id)
-                            $filteredJobs[] = $job;
-
-                    $jobs = $filteredJobs;
                 }
 
-                $categoryName = $category->name;
+                $filteredJobs = [];
+                $filteredCategories = [];
+
+                foreach ($jobs as $job)
+                    if ($job->categoryId == $categoryByFilter->id)
+                        $filteredJobs[] = $job;
+
+                foreach ($jobs as $job) {
+                    foreach ($categories as $category) {
+                        if ($job->categoryId == $category->id) {
+                            $filteredCategories[] = $category->name;
+                        }
+                    }
+                }
+
+                $categoryChoices = array_unique($filteredCategories);
+                $categoryName = $categoryByFilter->name;
 
                 return [
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/jobs.html.php',
                     'variables' => [
                         'categories' => $categories,
+                        'categoryChoices' => $categoryChoices,
                         'categoryName' => htmlspecialchars(strip_tags($categoryName), ENT_QUOTES, 'UTF-8'),
-                        'jobs' => $jobs
+                        'jobs' => $filteredJobs
                     ],
                     'title' => 'Admin Panel - Jobs'
                 ];
             }
             else {
+                $filteredCategories = [];
+
+                foreach ($allJobs as $job) {
+                    foreach ($categories as $category) {
+                        if ($job->categoryId == $category->id) {
+                            $filteredCategories[] = $category->name;
+                        }
+                    }
+                }
+
+                $categoryChoices = array_unique($filteredCategories);
+
                 return [
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/jobs.html.php',
                     'variables' => [
                         'categories' => $categories,
+                        'categoryChoices' => $categoryChoices
                     ],
                     'title' => 'Admin Panel - Jobs'
                 ];
@@ -80,15 +102,24 @@ class AdminController {
             else
                 $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
 
-            $categoryName = '';
-            unset($_GET['filterBy']);
+            $filteredCategories = [];
+
+            foreach ($jobs as $job) {
+                foreach ($categories as $category) {
+                    if ($job->categoryId == $category->id) {
+                        $filteredCategories[] = $category->name;
+                    }
+                }
+            }
+
+            $categoryChoices = array_unique($filteredCategories);
 
             return [
                 'layout' => 'sidebarlayout.html.php',
                 'template' => 'admin/jobs.html.php',
                 'variables' => [
                     'categories' => $categories,
-                    'categoryName' => $categoryName,
+                    'categoryChoices' => $categoryChoices,
                     'jobs' => $jobs
                 ],
                 'title' => 'Admin Panel - Jobs'
