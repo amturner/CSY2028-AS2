@@ -28,7 +28,8 @@
                     <li>
                         <div class="details">
                             <h2><?=$job->title;?></h2>
-                            <h3><?=$job->salary;?></h3>
+                            <h3><?='Location: ' . $job->getFullLocation();?></h3>
+                            <h3><?='Salary: ' . $job->salary;?></h3>
                             <p><?=nl2br($job->description);?></p>
 
                             <a class="more" href="/jobs/apply?id=<?=$job->id;?>">Apply for this job</a>
