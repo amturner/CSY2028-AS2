@@ -253,8 +253,8 @@ class JobController {
                 $category = $categoriesByFilter[0];
                 
                 if (isset($_GET['location']) && $_GET['location'] != 'All') {
-                    if (!empty($this->locationsTable->retrieveRecord('town', $_GET['location'])[0])) {
-                        $locationByFilter = $this->locationsTable->retrieveRecord('town', $_GET['location'])[0];
+                    if (!empty($this->locationsTable->retrieveRecord('town', ucwords(urldecode($_GET['location'])))[0])) {
+                        $locationByFilter = $this->locationsTable->retrieveRecord('town', ucwords(urldecode($_GET['location'])))[0];
                         $jobs = $this->jobsTable->retrieveRecord('categoryId', $category->id);                
 
                         $filteredLocations = [];
