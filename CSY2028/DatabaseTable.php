@@ -81,8 +81,18 @@ class DatabaseTable {
         $stmt->execute($record);
     }
 
-    // Function to delete a record from the specified database table.
-    public function deleteRecord($id) {
+    // Function to delete a record from the specified database table by providing the name of the field and a value.
+    public function deleteRecord($field, $value) {
+        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->table . ' WHERE ' . $field . ' = :value');
+
+        $criteria = [
+            'value' => $value
+        ];
+        $stmt->execute($criteria);
+    }
+
+    // Function to delete a record from the specified database table by providing an id.
+    public function deleteRecordById($id) {
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->table . ' WHERE ' . $this->primaryKey . ' = :id');
 
         $criteria = [

@@ -7,6 +7,19 @@ class CategoryController {
         $this->categoriesTable = $categoriesTable;
     }
 
+    public function listCategories() {
+        $categories = $this->categoriesTable->retrieveAllRecords();
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => 'admin/categories.html.php',
+            'variables' => [
+                'categories' => $categories
+            ],
+            'title' => 'Admin Panel - Categories'
+        ];
+    }
+
     public function editCategorySubmit() {
         if (isset($_POST['submit'])) {
             $categories = $this->categoriesTable->retrieveAllRecords();
@@ -91,7 +104,7 @@ class CategoryController {
     }
 
     public function deleteCategory() {
-        $this->categoriesTable->deleteRecord($_POST['category']['id']);
+        $this->categoriesTable->deleteRecordById($_POST['category']['id']);
 
         header('Location: /admin/categories');
     }

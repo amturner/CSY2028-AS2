@@ -129,6 +129,7 @@ main img {display: block;}
 	color: red;
 }
 
+/* CSY2028 Classes */
 form .required::after {
 	content: '*';
 	color:red;
@@ -152,4 +153,24 @@ form .required::after {
 .filter button, .filter input[type=submit] {
 	width: auto;
 	padding: 0 2em;
+}
+
+.enquiry-reply {
+	padding: 0.4em;
+}
+.enquiry-reply .reply textarea {
+	margin-top: 0.4em;
+	width: 26em;
+	min-height: 8em;
+}
+.enquiry-reply .reply:last-child {
+	margin-top: 2em;
+}
+
+.closing-soon .job {
+	margin-top: 0.8em;
+	border-bottom: 1px solid black;
+}
+.closing-soon .job:last-child {
+	border: none;
 }

@@ -9,6 +9,21 @@ class UserController {
         $this->categoriesTable = $categoriesTable;
     }
 
+    public function listUsers() {
+        $categories = $this->categoriesTable->retrieveAllRecords();
+        $users = $this->usersTable->retrieveAllRecords();
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => 'admin/users.html.php',
+            'variables' => [
+                'categories' => $categories,
+                'users' => $users
+            ],
+            'title' => 'Admin Panel - Users'
+        ];
+    }
+
     public function editUserSubmit() {
         if (isset($_POST['submit'])) {
             $categories = $this->categoriesTable->retrieveAllRecords();
@@ -155,7 +170,7 @@ class UserController {
     }
 
     public function deleteUser() {
-        $this->usersTable->deleteRecord($_POST['user']['id']);
+        $this->usersTable->deleteRecordById($_POST['user']['id']);
 
         header('Location: /admin/users');
     }

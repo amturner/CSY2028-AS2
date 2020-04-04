@@ -3,7 +3,7 @@
 </section>
 
 <section class="right">
-    <?php if ($title != ''): ?>
+    <?php if (isset($title)): ?>
         <h2>Apply for <?=$title;?></h2>
         <?php if (isset($errors) && count($errors) > 0): ?>
             <div class="errors">

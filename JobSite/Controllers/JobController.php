@@ -91,26 +91,34 @@ class JobController {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
         if (isset($_GET['id'])) {
-            $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
+            if (!empty($this->jobsTable->retrieveRecord('id', $_GET['id'])[0])) {
+                $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
 
-            if (isset($job))
-                $jobTitle = htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8');
-            else
-                $jobTitle = '';    
+                $title = 'Apply';
+
+                $variables = [
+                    'categories' => $categories,
+                    'title' => htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8'),
+                    'jobId' => $job->id
+                ];
+            }
+            else {
+                $title = 'Apply - Job Not Found';
+
+                $variables = [
+                    'categories' => $categories
+                ];
+            }          
         }
         else {
-            $jobTitle = '';
+            header('Location: /jobs');
         }
 
         return [
             'layout' => 'sidebarlayout.html.php',
             'template' => 'main/apply.html.php',
-            'variables' => [
-                'categories' => $categories,
-                'title' => $jobTitle,
-                'jobId' => $job->id
-            ],
-            'title' => 'Jobs - Apply'
+            'variables' => $variables,
+            'title' => 'Jobs - ' . $title
         ];
     }
 
@@ -225,9 +233,28 @@ class JobController {
     }
 
     public function deleteJob() {
-        $this->jobsTable->deleteRecord($_POST['id']);
+        $this->jobsTable->deleteRecordById($_POST['id']);
+        $this->applicantsTable->deleteRecord('jobId', $_POST['id']);
 
         header('Location: /admin/jobs');
+    }
+
+    public function showJob() {
+        $categories = $this->categoriesTable->retrieveAllRecords();
+        $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
+
+        if (empty($job))
+            header('Location: /jobs');
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => 'main/job.html.php',
+            'variables' => [
+                'categories' => $categories,
+                'job' => $job
+            ],
+            'title' => 'Jobs - Job Details'
+        ];
     }
 
     public function listJobs() {
@@ -364,6 +391,177 @@ class JobController {
             'template' => 'main/jobs.html.php',
             'variables' => $variables,
             'title' => 'Jobs' . $title
+        ];
+    }
+
+    public function listJobsAdmin($parameters) {
+        $categories = $this->categoriesTable->retrieveAllRecords();
+        $allJobs = $this->jobsTable->retrieveAllRecords();
+
+        if (empty($parameters))
+            header('Location: /admin/jobs/active');
+
+        foreach ($allJobs as $job) {
+            if (date('Y-m-d') > $job->closingDate) {
+                $values = [
+                    'id' => $job->id,
+                    'active' => 0
+                ];
+
+                $this->jobsTable->save($values);
+            }
+        }
+
+        if (isset($_GET['category']) && $_GET['category'] != 'All') {
+            if (!empty($this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category']))))) {
+                $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category'])));
+                $categoryByFilter = $categoriesByFilter[0];
+
+                if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
+                    $jobs = $this->jobsTable->retrieveAllRecords();
+                }
+                else {
+                    $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
+                }
+
+                $filteredJobs = [];
+                $filteredCategories = [];
+
+                if ($parameters[0] == 'active') {
+                    $title = 'Jobs';
+
+                    foreach ($jobs as $job)
+                    if ($job->categoryId == $categoryByFilter->id && $job->active == 1)
+                        $filteredJobs[] = $job;
+
+                    foreach ($jobs as $job) {
+                        foreach ($categories as $category) {
+                            if ($job->categoryId == $category->id && $job->active == 1) {
+                                $filteredCategories[] = $category->name;
+                            }
+                        }
+                    }
+                }
+                elseif ($parameters[0] == 'archived') {
+                    $title = 'Archived Jobs';
+
+                    foreach ($jobs as $job)
+                    if ($job->categoryId == $categoryByFilter->id && $job->active == 0)
+                        $filteredJobs[] = $job;
+
+                    foreach ($jobs as $job) {
+                        foreach ($categories as $category) {
+                            if ($job->categoryId == $category->id && $job->active == 0) {
+                                $filteredCategories[] = $category->name;
+                            }
+                        }
+                    }                    
+                }
+
+                $categoryChoices = array_unique($filteredCategories);
+                $categoryName = $categoryByFilter->name;
+
+                $variables = [
+                    'categories' => $categories,
+                    'title' => $title,
+                    'categoryChoices' => $categoryChoices,
+                    'categoryName' => htmlspecialchars(strip_tags($categoryName), ENT_QUOTES, 'UTF-8'),
+                    'jobs' => $filteredJobs,
+                    'parameters' => $parameters
+                ];
+            }
+            else {
+                $filteredCategories = [];
+
+                if ($parameters[0] == 'active') {
+                    $title = 'Jobs';
+
+                    foreach ($allJobs as $job) {
+                        foreach ($categories as $category) {
+                            if ($job->categoryId == $category->id && $job->active == 1) {
+                                $filteredCategories[] = $category->name;
+                            }
+                        }
+                    }
+                }
+                elseif ($parameters[0] == 'archived') {
+                    $title = 'Archived Jobs';
+
+                    foreach ($allJobs as $job) {
+                        foreach ($categories as $category) {
+                            if ($job->categoryId == $category->id && $job->active == 0) {
+                                $filteredCategories[] = $category->name;
+                            }
+                        }
+                    }
+                }
+
+                $categoryChoices = array_unique($filteredCategories);
+
+                $variables = [
+                    'categories' => $categories,
+                    'title' => $title,
+                    'categoryChoices' => $categoryChoices,
+                    'parameters' => $parameters
+                ];
+            }
+        }
+        else {
+            if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']))
+                $jobs = $this->jobsTable->retrieveAllRecords();
+            else
+                $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
+
+            $filteredJobs = [];
+            $filteredCategories = [];
+
+            if ($parameters[0] == 'active') {
+                $title = 'Jobs';
+
+                foreach ($jobs as $job)
+                if ($job->active == 1)
+                    $filteredJobs[] = $job;
+
+                foreach ($jobs as $job) {
+                    foreach ($categories as $category) {
+                        if ($job->categoryId == $category->id && $job->active == 1) {
+                            $filteredCategories[] = $category->name;
+                        }
+                    }
+                }
+            }
+            elseif ($parameters[0] == 'archived') {
+                $title = 'Archived Jobs';
+
+                foreach ($jobs as $job)
+                if ($job->active == 0)
+                    $filteredJobs[] = $job;
+
+                foreach ($jobs as $job) {
+                    foreach ($categories as $category) {
+                        if ($job->categoryId == $category->id && $job->active == 0) {
+                            $filteredCategories[] = $category->name;
+                        }
+                    }
+                }
+            }
+
+            $categoryChoices = array_unique($filteredCategories);
+
+            $variables = [
+                'categories' => $categories,
+                'title' => $title,
+                'categoryChoices' => $categoryChoices,
+                'jobs' => $filteredJobs,
+                'parameters' => $parameters
+            ];
+        }
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => 'admin/jobs.html.php',
+            'variables' => $variables,
+            'title' => 'Admin Panel - Jobs - ' . $title
         ];
     }
 

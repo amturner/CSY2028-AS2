@@ -30,7 +30,7 @@
                             <h2><?=$job->title;?></h2>
                             <h3><?='Location: ' . $job->getFullLocation();?></h3>
                             <h3><?='Salary: ' . $job->salary;?></h3>
-                            <p><?=nl2br($job->description);?></p>
+                            <p><?=strip_tags(nl2br(htmlspecialchars($job->description, ENT_QUOTES, 'UTF-8')), '<br>');?>ssss</p>
 
                             <a class="more" href="/jobs/apply?id=<?=$job->id;?>">Apply for this job</a>
                             <h4>Closing Date: <?=$job->getClosingDate();?></h4>

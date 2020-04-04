@@ -5,5 +5,5 @@
 <section class="right">
     <h2>Apply for <?=$title;?></h2>
 
-    <p>Yay</p>
+    <p>Your application has successfully been submitted!</p>
 </section>

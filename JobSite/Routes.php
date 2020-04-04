@@ -8,6 +8,8 @@ class Routes implements \CSY2028\Routes {
         $categoriesTable = new \CSY2028\DatabaseTable($pdo, 'category', 'id');
         $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id');
         $applicantsTable = new \CSY2028\DatabaseTable($pdo, 'applicants', 'id');
+        $enquiriesTable = new \CSY2028\DatabaseTable($pdo, 'enquiries', 'id', '\JobSite\Entities\Enquiry');
+        $enquiryRepliesTable = new \CSY2028\DatabaseTable($pdo, 'enquiry_replies', 'id');
         $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id', '\JobSite\Entities\User');
         $locationsTable = new \CSY2028\DatabaseTable($pdo, 'locations', 'id');
 
@@ -16,11 +18,12 @@ class Routes implements \CSY2028\Routes {
         $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job', [$locationsTable, $applicantsTable, $categoriesTable]);
 
         // Create new controller objects.
-        $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable, $categoriesTable);
+        $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable, $enquiriesTable, $categoriesTable);
         $adminController = new \JobSite\Controllers\AdminController($usersTable, $categoriesTable, $jobsTable, $applicantsTable);
         $categoryController = new \JobSite\Controllers\CategoryController($categoriesTable);
         $jobController = new \JobSite\Controllers\JobController($jobsTable, $applicantsTable, $locationsTable, $categoriesTable);
         $userController = new \JobSite\Controllers\UserController($usersTable, $categoriesTable);
+        $enquiryController = new \JobSite\Controllers\EnquiryController($usersTable, $enquiriesTable, $enquiryRepliesTable, $categoriesTable);
 
         // Define routes.
         $routes = [
@@ -34,6 +37,12 @@ class Routes implements \CSY2028\Routes {
                 'GET' => [
                     'controller' => $jobController,
                     'function' => 'listJobs'
+                ]
+            ],
+            'jobs/job' => [
+                'GET' => [
+                    'controller' => $jobController,
+                    'function' => 'showJob'
                 ]
             ],
             'jobs/apply' => [
@@ -56,6 +65,16 @@ class Routes implements \CSY2028\Routes {
                 'GET' => [
                     'controller' => $jobSiteController,
                     'function' => 'faq'
+                ]
+            ],
+            'contact' => [
+                'GET' => [
+                    'controller' => $enquiryController,
+                    'function' => 'contactForm'
+                ],
+                'POST' => [
+                    'controller' => $enquiryController,
+                    'function' => 'contactSubmit'
                 ]
             ],
             'admin' => [
@@ -91,23 +110,23 @@ class Routes implements \CSY2028\Routes {
             ],
             'admin/jobs' => [
                 'GET' => [
-                    'controller' => $adminController,
-                    'function' => 'jobs'
+                    'controller' => $jobController,
+                    'function' => 'listJobsAdmin'
                 ],
                 'login' => true
             ],
             'admin/jobs/active' => [
                 'GET' => [
-                    'controller' => $adminController,
-                    'function' => 'jobs',
+                    'controller' => $jobController,
+                    'function' => 'listJobsAdmin',
                     'parameters' => ['active']
                 ],
                 'login' => true
             ],
             'admin/jobs/archive' => [
                 'GET' => [
-                    'controller' => $adminController,
-                    'function' => 'jobs',
+                    'controller' => $jobController,
+                    'function' => 'listJobsAdmin',
                     'parameters' => ['archived']
                 ],
                 'login' => true
@@ -138,8 +157,8 @@ class Routes implements \CSY2028\Routes {
             ],
             'admin/categories' => [
                 'GET' => [
-                    'controller' => $adminController,
-                    'function' => 'categories'
+                    'controller' => $categoryController,
+                    'function' => 'listCategories'
                 ],
                 'login' => true,
                 'restricted' => true
@@ -166,8 +185,8 @@ class Routes implements \CSY2028\Routes {
             ],
             'admin/users' => [
                 'GET' => [
-                    'controller' => $adminController,
-                    'function' => 'users'
+                    'controller' => $userController,
+                    'function' => 'listUsers'
                 ],
                 'login' => true,
                 'restricted' => true
@@ -187,6 +206,52 @@ class Routes implements \CSY2028\Routes {
                 'POST' => [
                     'controller' => $userController,
                     'function' => 'deleteUser'
+                ],
+                'login' => true,
+                'restricted' => true
+            ],
+            'admin/enquiries' => [
+                'GET' => [
+                    'controller' => $enquiryController,
+                    'function' => 'listEnquiries'
+                ],
+                'login' => true,
+                'restricted' => true
+            ],
+            'admin/enquiries/active' => [
+                'GET' => [
+                    'controller' => $enquiryController,
+                    'function' => 'listEnquiries',
+                    'parameters' => ['active']
+                ],
+                'login' => true,
+                'restricted' => true                
+            ],
+            'admin/enquiries/archive' => [
+                'GET' => [
+                    'controller' => $enquiryController,
+                    'function' => 'listEnquiries',
+                    'parameters' => ['archived']
+                ],
+                'login' => true,
+                'restricted' => true   
+            ],
+            'admin/enquiries/reply' => [
+                'GET' => [
+                    'controller' => $enquiryController,
+                    'function' => 'replyEnquiryForm'
+                ],
+                'POST' => [
+                    'controller' => $enquiryController,
+                    'function' => 'replyEnquirySubmit'
+                ],
+                'login' => true,
+                'restricted' => true
+            ],
+            'admin/enquiries/delete' => [
+                'POST' => [
+                    'controller' => $enquiryController,
+                    'function' => 'deleteEnquiry'
                 ],
                 'login' => true,
                 'restricted' => true

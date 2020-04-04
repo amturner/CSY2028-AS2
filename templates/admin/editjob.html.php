@@ -60,6 +60,8 @@
         <label class="required">Closing Date</label>
         <input type="date" name="job[closingDate]" value="<?=(isset($_GET['id'])) ? $job->closingDate : '';?>"  />
 
+        <input type="hidden" name="job[userId]" value="<?=(!isset($_GET['id'])) ? $_SESSION['id'] : '';?>" />
+        
         <input type="submit" name="submit" value="Save" />
     </form>
 </section>
