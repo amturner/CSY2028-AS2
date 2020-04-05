@@ -305,7 +305,15 @@ class Routes implements \CSY2028\Routes {
 		if (!isset($_SESSION['loggedIn']))
 			header('Location: /admin/login');
     }
-    
+
+    public function checkAccess() {
+        $this->updateRole();
+        if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']))
+            return true;
+        else
+            header('Location: /admin/access-restricted');
+    }
+
     public function updateRole() {
         if (isset($_SESSION['id'])) {
             require '../dbConnection.php';
@@ -337,10 +345,5 @@ class Routes implements \CSY2028\Routes {
                 $_SESSION['isClient'] = true;
             }
         }
-    }
-
-    public function checkAccess() {
-        if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']))
-            return true;
     }
 }
