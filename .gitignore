@@ -1,1 +1,3 @@
 public/cvs
+.phpunit.result.cache
+report/
