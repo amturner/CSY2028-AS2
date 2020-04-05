@@ -18,13 +18,10 @@ class EntryPoint {
 		$routes = $this->routes->getRoutes();
 
 		if (isset($routes[$route]['login']))
-			$this->routes->checkLogin();
-
-        $this->routes->updateRole();
-
+            $this->routes->checkLogin();
+            
         if (isset($routes[$route]['restricted']))
-            if (!$this->routes->checkAccess())
-                header('Location: /admin/access-restricted');
+            $this->routes->checkAccess();
 
 		$controller = $routes[$route][$method]['controller'];
         $functionName = $routes[$route][$method]['function'];
