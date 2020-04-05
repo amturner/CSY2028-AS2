@@ -7,7 +7,6 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <file>dbConnection.php</file>
             <file>CSY2028/DatabaseTable.php</file>
             <file>JobSite/Controllers/JobSiteController.php</file>
             <file>JobSite/Controllers/AdminController.php</file>
