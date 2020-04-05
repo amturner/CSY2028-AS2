@@ -5,35 +5,39 @@ class JobController {
     private $applicantsTable;
     private $locationsTable;
     private $categoriesTable;
+    private $get;
+    private $post;
 
-    public function __construct(\CSY2028\DatabaseTable $jobsTable, \CSY2028\DatabaseTable $applicantsTable, \CSY2028\DatabaseTable $locationsTable, \CSY2028\DatabaseTable $categoriesTable) {
+    public function __construct(\CSY2028\DatabaseTable $jobsTable, \CSY2028\DatabaseTable $applicantsTable, \CSY2028\DatabaseTable $locationsTable, \CSY2028\DatabaseTable $categoriesTable, $get, $post) {
         $this->jobsTable = $jobsTable;
         $this->applicantsTable = $applicantsTable;
         $this->locationsTable = $locationsTable;
         $this->categoriesTable = $categoriesTable;
+        $this->get = $get;
+        $this->post = $post;
     }
 
     public function applySubmit() {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
-        if (isset($_POST['submit'])) {
-            $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
+        if (isset($this->post['submit'])) {
+            $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
             $jobId = $job->id;
             $jobTitle = htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8');
 
             $errors = [];
 
-            if ($_POST['apply']['name'] == '')
+            if ($this->post['apply']['name'] == '')
                 $errors[] = 'Your name cannot be blank.';
 
-            if ($_POST['apply']['email'] != '') {
-                if (!filter_var($_POST['apply']['email'], FILTER_VALIDATE_EMAIL))
+            if ($this->post['apply']['email'] != '') {
+                if (!filter_var($this->post['apply']['email'], FILTER_VALIDATE_EMAIL))
                     $errors[] = 'Your email address is invalid.';
             }
             else
                 $errors[] = 'Your email address cannot be blank.';
 
-            if ($_POST['apply']['details'] == '')
+            if ($this->post['apply']['details'] == '')
                 $errors[] = 'Your cover letter cannot be blank.';
 
             if ($_FILES['cv']['error'] != 4) {
@@ -51,9 +55,9 @@ class JobController {
 
             if (count($errors) == 0) {
                 $values = [
-                    'name' => htmlspecialchars(strip_tags($_POST['apply']['name']), ENT_QUOTES, 'UTF-8'),
-                    'email' => $_POST['apply']['email'],
-                    'details' => htmlspecialchars(strip_tags($_POST['apply']['details']), ENT_QUOTES, 'UTF-8'),
+                    'name' => htmlspecialchars(strip_tags($this->post['apply']['name']), ENT_QUOTES, 'UTF-8'),
+                    'email' => $this->post['apply']['email'],
+                    'details' => htmlspecialchars(strip_tags($this->post['apply']['details']), ENT_QUOTES, 'UTF-8'),
                     'jobId' => $jobId,
                     'cv' => $fileName
 
@@ -90,9 +94,9 @@ class JobController {
     public function applyForm() {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
-        if (isset($_GET['id'])) {
-            if (!empty($this->jobsTable->retrieveRecord('id', $_GET['id'])[0])) {
-                $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
+        if (isset($this->get['id'])) {
+            if (!empty($this->jobsTable->retrieveRecord('id', $this->get['id'])[0])) {
+                $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
 
                 $title = 'Apply';
 
@@ -123,45 +127,45 @@ class JobController {
     }
 
     public function editJobSubmit() {
-        if (isset($_POST['submit'])) {
+        if (isset($this->post['submit'])) {
             $categories = $this->categoriesTable->retrieveAllRecords();
             $locations = $this->locationsTable->retrieveAllRecords('town', 'ASC');
 
-            if (isset($_GET['id']))
-                $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
+            if (isset($this->get['id']))
+                $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
             else
                 $job = '';
 
             $errors = [];
 
             // Validate user input
-            if ($_POST['job']['title'] == '')
+            if ($this->post['job']['title'] == '')
                 $errors[] = 'The title cannot be blank.';
             
-            if ($_POST['job']['description'] == '')
+            if ($this->post['job']['description'] == '')
                 $errors[] = 'The description cannot be blank.';
 
-            if ($_POST['job']['salary'] == '')
+            if ($this->post['job']['salary'] == '')
                 $errors[] = 'The salary cannot be blank.';
 
-            if ($_POST['job']['closingDate'] != null) {
-                if ($_POST['job']['closingDate'] < date('Y-m-d'))
+            if ($this->post['job']['closingDate'] != null) {
+                if ($this->post['job']['closingDate'] < date('Y-m-d'))
                     $errors[] = 'The closing date cannnot be before the current date.';
             }
             else
                 $errors[] = 'The closing date cannot be blank.';
 
             if (count($errors) == 0) {
-                if (isset($_GET['id']))
+                if (isset($this->get['id']))
                     $pageName = 'Job Updated';
                 else
                     $pageName = 'Job Added';
 
                 if ($job != '')
                     if ($job->active == 0)
-                            $_POST['job']['active'] = 1;
+                            $this->post['job']['active'] = 1;
 
-                $this->jobsTable->save($_POST['job']);
+                $this->jobsTable->save($this->post['job']);
 
                 return [
                     'layout' => 'sidebarlayout.html.php',
@@ -169,14 +173,14 @@ class JobController {
                     'variables' => [
                         'categories' => $categories,
                         'locations' => $locations,
-                        'title' => htmlspecialchars(strip_tags($_POST['job']['title']), ENT_QUOTES, 'UTF-8')
+                        'title' => htmlspecialchars(strip_tags($this->post['job']['title']), ENT_QUOTES, 'UTF-8')
                     ],
                     'title' => 'Admin Panel - ' . $pageName
                 ];
             }
             // Display the edit form with any generated errors.
             else {
-                if (isset($_GET['id']))
+                if (isset($this->get['id']))
                     $pageName = 'Edit Job';
                 else
                     $pageName = 'Add Job';
@@ -200,8 +204,8 @@ class JobController {
         $categories = $this->categoriesTable->retrieveAllRecords();
         $locations = $this->locationsTable->retrieveAllRecords('town', 'ASC');
 
-        if (isset($_GET['id'])) {
-            $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
+        if (isset($this->get['id'])) {
+            $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
             if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
                 
                 $variables = [
@@ -233,15 +237,15 @@ class JobController {
     }
 
     public function deleteJob() {
-        $this->jobsTable->deleteRecordById($_POST['id']);
-        $this->applicantsTable->deleteRecord('jobId', $_POST['id']);
+        $this->jobsTable->deleteRecordById($this->post['id']);
+        $this->applicantsTable->deleteRecord('jobId', $this->post['id']);
 
         header('Location: /admin/jobs');
     }
 
     public function showJob() {
         $categories = $this->categoriesTable->retrieveAllRecords();
-        $job = $this->jobsTable->retrieveRecord('id', $_GET['id'])[0];
+        $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
 
         if (empty($job))
             header('Location: /jobs');
@@ -273,15 +277,15 @@ class JobController {
             }
         }
 
-        if (isset($_GET['category']) && $_GET['category'] != '') {
-            $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category'])));
+        if (isset($this->get['category']) && $this->get['category'] != '') {
+            $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($this->get['category'])));
 
             if (!empty($categoriesByFilter)) {
                 $category = $categoriesByFilter[0];
                 
-                if (isset($_GET['location']) && $_GET['location'] != 'All') {
-                    if (!empty($this->locationsTable->retrieveRecord('town', ucwords(urldecode($_GET['location'])))[0])) {
-                        $locationByFilter = $this->locationsTable->retrieveRecord('town', ucwords(urldecode($_GET['location'])))[0];
+                if (isset($this->get['location']) && $this->get['location'] != 'All') {
+                    if (!empty($this->locationsTable->retrieveRecord('town', ucwords(urldecode($this->get['location'])))[0])) {
+                        $locationByFilter = $this->locationsTable->retrieveRecord('town', ucwords(urldecode($this->get['location'])))[0];
                         $jobs = $this->jobsTable->retrieveRecord('categoryId', $category->id);                
 
                         $filteredLocations = [];
@@ -412,9 +416,9 @@ class JobController {
             }
         }
 
-        if (isset($_GET['category']) && $_GET['category'] != 'All') {
-            if (!empty($this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category']))))) {
-                $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($_GET['category'])));
+        if (isset($this->get['category']) && $this->get['category'] != 'All') {
+            if (!empty($this->categoriesTable->retrieveRecord('name', ucwords(urldecode($this->get['category']))))) {
+                $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($this->get['category'])));
                 $categoryByFilter = $categoriesByFilter[0];
 
                 if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
@@ -567,7 +571,7 @@ class JobController {
 
     public function listApplicants() {
         $categories = $this->categoriesTable->retrieveAllRecords();
-        $jobs = $this->jobsTable->retrieveRecord('id', $_GET['id']);
+        $jobs = $this->jobsTable->retrieveRecord('id', $this->get['id']);
 
         if (!empty($jobs)) {
             $job = $jobs[0];

@@ -2,9 +2,13 @@
 namespace JobSite\Controllers;
 class CategoryController {
     private $categoriesTable;
+    private $get;
+    private $post;
 
-    public function __construct(\CSY2028\DatabaseTable $categoriesTable) {
+    public function __construct(\CSY2028\DatabaseTable $categoriesTable, $get, $post) {
         $this->categoriesTable = $categoriesTable;
+        $this->get = $get;
+        $this->post = $post;
     }
 
     public function listCategories() {
@@ -21,42 +25,42 @@ class CategoryController {
     }
 
     public function editCategorySubmit() {
-        if (isset($_POST['submit'])) {
+        if (isset($this->post['submit'])) {
             $categories = $this->categoriesTable->retrieveAllRecords();
 
-            if (isset($_GET['id']))
-                $category = $this->categoriesTable->retrieveRecord('id', $_GET['id'])[0];
+            if (isset($this->get['id']))
+                $category = $this->categoriesTable->retrieveRecord('id', $this->get['id'])[0];
             else
                 $category = '';
 
             $errors = [];
 
-            if ($_POST['category']['name'] == '')
+            if ($this->post['category']['name'] == '')
                 $errors[] = 'The name cannot be blank.';
 
             if (count($errors) == 0) {
-                if (isset($_GET['id']))
+                if (isset($this->get['id']))
                     $pageName = 'Category Updated';
                 else
                     $pageName = 'Category Added';
 
-                $_POST['category']['name'] = htmlspecialchars(strip_tags($_POST['category']['name']), ENT_QUOTES, 'UTF-8');
+                $this->post['category']['name'] = htmlspecialchars(strip_tags($this->post['category']['name']), ENT_QUOTES, 'UTF-8');
 
-                $this->categoriesTable->save($_POST['category']);
+                $this->categoriesTable->save($this->post['category']);
 
                 return [
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/editcategorysuccess.html.php',
                     'variables' => [
                         'categories' => $categories,
-                        'name' => htmlspecialchars(strip_tags($_POST['category']['name']), ENT_QUOTES, 'UTF-8')
+                        'name' => htmlspecialchars(strip_tags($this->post['category']['name']), ENT_QUOTES, 'UTF-8')
                     ],
                     'title' => 'Admin Panel - ' . $pageName
                 ];
             }
             // Display the edit form with any generated errors.
             else {
-                if (isset($_GET['id']))
+                if (isset($this->get['id']))
                     $pageName = 'Edit Category';
                 else
                     $pageName = 'Add Category';
@@ -78,8 +82,8 @@ class CategoryController {
     public function editCategoryForm() {
         $categories = $this->categoriesTable->retrieveAllRecords();
 
-        if (isset($_GET['id'])) {
-            $category = $this->categoriesTable->retrieveRecord('id', $_GET['id'])[0];
+        if (isset($this->get['id'])) {
+            $category = $this->categoriesTable->retrieveRecord('id', $this->get['id'])[0];
 
             return [
                 'layout' => 'sidebarlayout.html.php',
@@ -104,7 +108,7 @@ class CategoryController {
     }
 
     public function deleteCategory() {
-        $this->categoriesTable->deleteRecordById($_POST['category']['id']);
+        $this->categoriesTable->deleteRecordById($this->post['category']['id']);
 
         header('Location: /admin/categories');
     }

@@ -4,7 +4,7 @@ class JobSiteController {
     private $jobsTable;
     private $categoriesTable;
 
-    public function __construct(\CSY2028\DatabaseTable $jobsTable, \CSY2028\DatabaseTable $enquiriesTable, \CSY2028\DatabaseTable $categoriesTable) {
+    public function __construct(\CSY2028\DatabaseTable $jobsTable, \CSY2028\DatabaseTable $categoriesTable) {
         $this->jobsTable = $jobsTable;
         $this->categoriesTable = $categoriesTable;
     }

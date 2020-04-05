@@ -18,12 +18,12 @@ class Routes implements \CSY2028\Routes {
         $jobsTable = new \CSY2028\DatabaseTable($pdo, 'job', 'id', '\JobSite\Entities\Job', [$locationsTable, $applicantsTable, $categoriesTable]);
 
         // Create new controller objects.
-        $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable, $enquiriesTable, $categoriesTable);
+        $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable, $categoriesTable);
         $adminController = new \JobSite\Controllers\AdminController($usersTable, $categoriesTable, $jobsTable, $applicantsTable);
-        $categoryController = new \JobSite\Controllers\CategoryController($categoriesTable);
-        $jobController = new \JobSite\Controllers\JobController($jobsTable, $applicantsTable, $locationsTable, $categoriesTable);
-        $userController = new \JobSite\Controllers\UserController($usersTable, $categoriesTable);
-        $enquiryController = new \JobSite\Controllers\EnquiryController($usersTable, $enquiriesTable, $enquiryRepliesTable, $categoriesTable);
+        $categoryController = new \JobSite\Controllers\CategoryController($categoriesTable, $_GET, $_POST);
+        $jobController = new \JobSite\Controllers\JobController($jobsTable, $applicantsTable, $locationsTable, $categoriesTable, $_GET, $_POST);
+        $userController = new \JobSite\Controllers\UserController($usersTable, $categoriesTable, $_GET, $_POST);
+        $enquiryController = new \JobSite\Controllers\EnquiryController($usersTable, $enquiriesTable, $enquiryRepliesTable, $categoriesTable, $_GET, $_POST);
 
         // Define routes.
         $routes = [

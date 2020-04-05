@@ -5,12 +5,16 @@ class EnquiryController {
     private $enquiriesTable;
     private $enquiryRepliesTable;
     private $categoriesTable;
+    private $get;
+    private $post;
 
-    public function __construct(\CSY2028\DatabaseTable $usersTable, \CSY2028\DatabaseTable $enquiriesTable, \CSY2028\DatabaseTable $enquiryRepliesTable, \CSY2028\DatabaseTable $categoriesTable) {
+    public function __construct(\CSY2028\DatabaseTable $usersTable, \CSY2028\DatabaseTable $enquiriesTable, \CSY2028\DatabaseTable $enquiryRepliesTable, \CSY2028\DatabaseTable $categoriesTable, $get, $post) {
         $this->usersTables = $usersTable;
         $this->enquiriesTable = $enquiriesTable;
         $this->enquiryRepliesTable = $enquiryRepliesTable;
         $this->categoriesTable = $categoriesTable;
+        $this->get = $get;
+        $this->post = $post;
     }
 
     public function listEnquiries($parameters) {
@@ -56,33 +60,33 @@ class EnquiryController {
     }
 
     public function contactSubmit() {
-        if (isset($_POST['submit'])) {
+        if (isset($this->post['submit'])) {
             $categories = $this->categoriesTable->retrieveAllRecords();
     
             $errors = [];
 
-            if ($_POST['contact']['firstname'] == '')
+            if ($this->post['contact']['firstname'] == '')
                 $errors[] = 'Your name cannot be blank.';
 
-            if ($_POST['contact']['surname'] == '')
+            if ($this->post['contact']['surname'] == '')
                 $errors[] = 'Your name cannot be blank.';
 
-            if ($_POST['contact']['email'] != '') {
-                if (!filter_var($_POST['contact']['email'], FILTER_VALIDATE_EMAIL))
+            if ($this->post['contact']['email'] != '') {
+                if (!filter_var($this->post['contact']['email'], FILTER_VALIDATE_EMAIL))
                     $errors[] = 'Your email address is invalid.';
             }
             else
                 $errors[] = 'Your email address cannot be blank.';
 
-            if ($_POST['contact']['message'] == '')
+            if ($this->post['contact']['message'] == '')
                 $errors[] = 'Your message cannot be blank.';
 
             if (count($errors) == 0) {
-                $_POST['contact']['firstname'] = htmlspecialchars(strip_tags($_POST['contact']['firstname']), ENT_QUOTES, 'UTF-8');
-                $_POST['contact']['surname'] = htmlspecialchars(strip_tags($_POST['contact']['surname']), ENT_QUOTES, 'UTF-8');
-                $_POST['contact']['message'] = htmlspecialchars(strip_tags($_POST['contact']['message']), ENT_QUOTES, 'UTF-8');
+                $this->post['contact']['firstname'] = htmlspecialchars(strip_tags($this->post['contact']['firstname']), ENT_QUOTES, 'UTF-8');
+                $this->post['contact']['surname'] = htmlspecialchars(strip_tags($this->post['contact']['surname']), ENT_QUOTES, 'UTF-8');
+                $this->post['contact']['message'] = htmlspecialchars(strip_tags($this->post['contact']['message']), ENT_QUOTES, 'UTF-8');
 
-                $this->enquiriesTable->save($_POST['contact']);
+                $this->enquiriesTable->save($this->post['contact']);
 
                 $template = 'main/contactsuccess.html.php';
 
@@ -122,19 +126,19 @@ class EnquiryController {
     }
 
     public function replyEnquirySubmit() {
-        if (isset($_POST['submit'])) {
+        if (isset($this->post['submit'])) {
             $categories = $this->categoriesTable->retrieveAllRecords();
-            $enquiry = $this->enquiriesTable->retrieveRecord('id', $_GET['id'])[0];
+            $enquiry = $this->enquiriesTable->retrieveRecord('id', $this->get['id'])[0];
 
             $errors = [];
 
-            if ($_POST['reply']['message'] == '')
+            if ($this->post['reply']['message'] == '')
                 $errors[] = 'Your message cannot be blank.';
         
             if (count($errors) == 0) {
-                $_POST['reply']['message'] = htmlspecialchars(strip_tags($_POST['reply']['message']), ENT_QUOTES, 'UTF-8');
+                $this->post['reply']['message'] = htmlspecialchars(strip_tags($this->post['reply']['message']), ENT_QUOTES, 'UTF-8');
                 
-                $this->enquiryRepliesTable->save($_POST['reply']);
+                $this->enquiryRepliesTable->save($this->post['reply']);
                 
                 $enquiryValues = [
                     'id' => $enquiry->id,
@@ -169,7 +173,7 @@ class EnquiryController {
 
     public function replyEnquiryForm() {
         $categories = $this->categoriesTable->retrieveAllRecords();
-        $enquiry = $this->enquiriesTable->retrieveRecord('id', $_GET['id'])[0];
+        $enquiry = $this->enquiriesTable->retrieveRecord('id', $this->get['id'])[0];
 
         if (empty($enquiry) || $enquiry->answered == 1)
             header('Location: /admin/enquiries');
@@ -185,7 +189,7 @@ class EnquiryController {
     }
 
     public function deleteEnquiry() {
-        $this->enquiriesTable->deleteRecordById($_POST['enquiry']['id']);
+        $this->enquiriesTable->deleteRecordById($this->post['enquiry']['id']);
 
         header('Location: /admin/enquiries');
     }

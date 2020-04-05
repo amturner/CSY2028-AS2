@@ -4,9 +4,9 @@
 
 <section class="right">
     <?php require 'userpanel.html.php'; ?>
-    <h2><?=(isset($_GET['id'])) ? 'Job updated' : 'Job added';?></h2>
-    <p>The job <b><?=$title;?></b> was <?=(isset($_GET['id'])) ? 'updated' : 'added';?> successfully!</p>
-    <?php if (!isset($_GET['id'])): ?>
+    <h2><?=(isset($this->get['id'])) ? 'Job updated' : 'Job added';?></h2>
+    <p>The job <b><?=$title;?></b> was <?=(isset($this->get['id'])) ? 'updated' : 'added';?> successfully!</p>
+    <?php if (!isset($this->get['id'])): ?>
         <p><a href="/admin/jobs/edit">Add another job</a></p>
     <?php endif; ?>
     <p><a href="/admin/jobs/active">View all jobs</a></p>

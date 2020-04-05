@@ -7,12 +7,14 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <file>JobSiteController.php</file>
-            <file>AdminController.php</file>
-            <file>JobController.php</file>
-            <file>UserController.php</file>
-            <file>CategoryController.php</file>
-            <file>EnquiryController.php</file>
+            <file>dbConnection.php</file>
+            <file>CSY2028/DatabaseTable.php</file>
+            <file>JobSite/Controllers/JobSiteController.php</file>
+            <file>JobSite/Controllers/AdminController.php</file>
+            <file>JobSite/Controllers/JobController.php</file>
+            <file>JobSite/Controllers/UserController.php</file>
+            <file>JobSite/Controllers/CategoryController.php</file>
+            <file>JobSite/Controllers/EnquiryController.php</file>
         </whitelist>
     </filter>
 </phpunit>
