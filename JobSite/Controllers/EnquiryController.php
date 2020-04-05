@@ -4,21 +4,18 @@ class EnquiryController {
     private $usersTable;
     private $enquiriesTable;
     private $enquiryRepliesTable;
-    private $categoriesTable;
     private $get;
     private $post;
 
-    public function __construct(\CSY2028\DatabaseTable $usersTable, \CSY2028\DatabaseTable $enquiriesTable, \CSY2028\DatabaseTable $enquiryRepliesTable, \CSY2028\DatabaseTable $categoriesTable, $get, $post) {
+    public function __construct(\CSY2028\DatabaseTable $usersTable, \CSY2028\DatabaseTable $enquiriesTable, \CSY2028\DatabaseTable $enquiryRepliesTable, $get, $post) {
         $this->usersTables = $usersTable;
         $this->enquiriesTable = $enquiriesTable;
         $this->enquiryRepliesTable = $enquiryRepliesTable;
-        $this->categoriesTable = $categoriesTable;
         $this->get = $get;
         $this->post = $post;
     }
 
     public function listEnquiries($parameters) {
-        $categories = $this->categoriesTable->retrieveAllRecords();
         $users = $this->usersTables->retrieveAllRecords();
         $enquiries = $this->enquiriesTable->retrieveAllRecords();
         $enquiryReplies = $this->enquiryRepliesTable->retrieveAllRecords();
@@ -48,7 +45,6 @@ class EnquiryController {
             'layout' => 'sidebarlayout.html.php',
             'template' => 'admin/enquiries.html.php',
             'variables' => [
-                'categories' => $categories,
                 'parameters' => $parameters,
                 'title' => $title,
                 'users' => $users,
@@ -61,8 +57,6 @@ class EnquiryController {
 
     public function contactSubmit() {
         if (isset($this->post['submit'])) {
-            $categories = $this->categoriesTable->retrieveAllRecords();
-    
             $errors = [];
 
             if ($this->post['contact']['firstname'] == '')
@@ -90,15 +84,12 @@ class EnquiryController {
 
                 $template = 'main/contactsuccess.html.php';
 
-                $variables = [
-                    'categories' => $categories
-                ];
+                $variables = [];
             }
             else {
                 $template = 'main/contact.html.php';
 
                 $variables = [
-                    'categories' => $categories,
                     'errors' => $errors
                 ];
             }
@@ -112,22 +103,17 @@ class EnquiryController {
         ];
     }
 
-    public function contactForm() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
-        
+    public function contactForm() { 
         return [
             'layout' => 'mainlayout.html.php',
             'template' => 'main/contact.html.php',
-            'variables' => [
-                'categories' => $categories
-            ],
+            'variables' => [],
             'title' => 'Contact Us'
         ];
     }
 
     public function replyEnquirySubmit() {
         if (isset($this->post['submit'])) {
-            $categories = $this->categoriesTable->retrieveAllRecords();
             $enquiry = $this->enquiriesTable->retrieveRecord('id', $this->get['id'])[0];
 
             $errors = [];
@@ -149,15 +135,12 @@ class EnquiryController {
                 
                 $template = 'admin/replysuccess.html.php';
 
-                $variables = [
-                    'categories' => $categories
-                ];
+                $variables = [];
             }
             else
                 $template = 'admin/reply.html.php';
 
                 $variables = [
-                    'categories' => $categories,
                     'errors' => $errors,
                     'enquiry' => $enquiry
                 ];
@@ -172,7 +155,6 @@ class EnquiryController {
     }
 
     public function replyEnquiryForm() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
         $enquiry = $this->enquiriesTable->retrieveRecord('id', $this->get['id'])[0];
 
         if (empty($enquiry) || $enquiry->answered == 1)

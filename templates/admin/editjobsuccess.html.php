@@ -1,14 +1,8 @@
-<section class="left">
-    <?php require 'adminnav.html.php'; ?>
-</section>
-
-<section class="right">
-    <?php require 'userpanel.html.php'; ?>
-    <h2><?=(isset($this->get['id'])) ? 'Job updated' : 'Job added';?></h2>
-    <p>The job <b><?=$title;?></b> was <?=(isset($this->get['id'])) ? 'updated' : 'added';?> successfully!</p>
-    <?php if (!isset($this->get['id'])): ?>
-        <p><a href="/admin/jobs/edit">Add another job</a></p>
-    <?php endif; ?>
-    <p><a href="/admin/jobs/active">View all jobs</a></p>
-    <p><a href="/admin/jobs/archive">View all archived jobs</a></p>
-</section>
+<?php require 'userpanel.html.php'; ?>
+<h2><?=(isset($this->get['id'])) ? 'Job updated' : 'Job added';?></h2>
+<p>The job <b><?=$title;?></b> was <?=(isset($this->get['id'])) ? 'updated' : 'added';?> successfully!</p>
+<?php if (!isset($this->get['id'])): ?>
+    <p><a href="/admin/jobs/edit">Add another job</a></p>
+<?php endif; ?>
+<p><a href="/admin/jobs/active">View all jobs</a></p>
+<p><a href="/admin/jobs/archive">View all archived jobs</a></p>

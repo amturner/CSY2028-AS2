@@ -1,8 +1,2 @@
-<section class="left">
-    <?php require 'adminnav.html.php'; ?>
-</section>
-
-<section class="right">
-    <?php require 'userpanel.html.php'; ?>
-    <h2>You are now logged in</h2>
-</section>
+<?php require 'userpanel.html.php'; ?>
+<h2>You are now logged in</h2>

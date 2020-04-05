@@ -10,7 +10,7 @@
 	</header>
 
 	<nav>
-		<?=$nav;?>
+		<?php require 'nav.html.php'; ?>
 	</nav>
 	
 	<img src="/images/randombanner.php"/>

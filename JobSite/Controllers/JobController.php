@@ -5,6 +5,7 @@ class JobController {
     private $applicantsTable;
     private $locationsTable;
     private $categoriesTable;
+    private $categories;
     private $get;
     private $post;
 
@@ -13,13 +14,12 @@ class JobController {
         $this->applicantsTable = $applicantsTable;
         $this->locationsTable = $locationsTable;
         $this->categoriesTable = $categoriesTable;
+        $this->categories = $this->categoriesTable->retrieveAllRecords();
         $this->get = $get;
         $this->post = $post;
     }
 
     public function applySubmit() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
-
         if (isset($this->post['submit'])) {
             $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
             $jobId = $job->id;
@@ -69,7 +69,6 @@ class JobController {
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'main/applysuccess.html.php',
                     'variables' => [
-                        'categories' => $categories,
                         'title' => $jobTitle
                     ],
                     'title' => 'Jobs - Apply'
@@ -80,7 +79,6 @@ class JobController {
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'main/apply.html.php',
                     'variables' => [
-                        'categories' => $categories,
                         'title' => $jobTitle,
                         'jobId' => $jobId,
                         'errors' => $errors
@@ -92,8 +90,6 @@ class JobController {
     }
 
     public function applyForm() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
-
         if (isset($this->get['id'])) {
             if (!empty($this->jobsTable->retrieveRecord('id', $this->get['id'])[0])) {
                 $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
@@ -101,7 +97,6 @@ class JobController {
                 $title = 'Apply';
 
                 $variables = [
-                    'categories' => $categories,
                     'title' => htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8'),
                     'jobId' => $job->id
                 ];
@@ -109,9 +104,7 @@ class JobController {
             else {
                 $title = 'Apply - Job Not Found';
 
-                $variables = [
-                    'categories' => $categories
-                ];
+                $variables = [];
             }          
         }
         else {
@@ -128,7 +121,6 @@ class JobController {
 
     public function editJobSubmit() {
         if (isset($this->post['submit'])) {
-            $categories = $this->categoriesTable->retrieveAllRecords();
             $locations = $this->locationsTable->retrieveAllRecords('town', 'ASC');
 
             if (isset($this->get['id']))
@@ -171,8 +163,6 @@ class JobController {
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/editjobsuccess.html.php',
                     'variables' => [
-                        'categories' => $categories,
-                        'locations' => $locations,
                         'title' => htmlspecialchars(strip_tags($this->post['job']['title']), ENT_QUOTES, 'UTF-8')
                     ],
                     'title' => 'Admin Panel - ' . $pageName
@@ -189,7 +179,7 @@ class JobController {
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/editjob.html.php',
                     'variables' => [
-                        'categories' => $categories,
+                        'categories' => $this->categories,
                         'locations' => $locations,
                         'errors' => $errors,
                         'job' => $job
@@ -201,7 +191,6 @@ class JobController {
     }
 
     public function editJobForm() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
         $locations = $this->locationsTable->retrieveAllRecords('town', 'ASC');
 
         if (isset($this->get['id'])) {
@@ -209,7 +198,7 @@ class JobController {
             if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
                 
                 $variables = [
-                    'categories' => $categories,
+                    'categories' => $this->categories,
                     'locations' => $locations,
                     'job' => $job
                 ];
@@ -221,7 +210,7 @@ class JobController {
         }
         else {
             $variables = [
-                'categories' => $categories,
+                'categories' => $this->categories,
                 'locations' => $locations
             ];
 
@@ -244,7 +233,6 @@ class JobController {
     }
 
     public function showJob() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
         $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
 
         if (empty($job))
@@ -254,15 +242,13 @@ class JobController {
             'layout' => 'sidebarlayout.html.php',
             'template' => 'main/job.html.php',
             'variables' => [
-                'categories' => $categories,
                 'job' => $job
             ],
             'title' => 'Jobs - Job Details'
         ];
     }
 
-    public function listJobs() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
+    public function listJobs($parameters) {
         $locations = $this->locationsTable->retrieveAllRecords('town', 'ASC');
         $allJobs = $this->jobsTable->retrieveAllRecords();
 
@@ -318,7 +304,6 @@ class JobController {
                             'categoryName' => $categoryName,
                             'locationTown' => $locationTown,
                             'jobs' => $jobs,
-                            'categories' => $categories,
                             'locations' => $locations
                         ];
                         
@@ -329,7 +314,6 @@ class JobController {
 
                         $variables = [
                             'categoryName' => $categoryName,
-                            'categories' => $categories,
                             'locations' => $locations
                         ];
 
@@ -365,7 +349,6 @@ class JobController {
                     $variables = [
                         'categoryName' => $categoryName,
                         'jobs' => $jobs,
-                        'categories' => $categories,
                         'locations' => $locations
                     ];
 
@@ -374,7 +357,6 @@ class JobController {
             }
             else {
                 $variables = [
-                    'categories' => $categories,
                     'locations' => $locations
                 ];
 
@@ -383,7 +365,7 @@ class JobController {
         }
         else {
             $variables = [
-                'categories' => $categories,
+                'categories' => $parameters[0],
                 'locations' => $locations
             ];
             
@@ -399,7 +381,6 @@ class JobController {
     }
 
     public function listJobsAdmin($parameters) {
-        $categories = $this->categoriesTable->retrieveAllRecords();
         $allJobs = $this->jobsTable->retrieveAllRecords();
 
         if (empty($parameters))
@@ -466,7 +447,6 @@ class JobController {
                 $categoryName = $categoryByFilter->name;
 
                 $variables = [
-                    'categories' => $categories,
                     'title' => $title,
                     'categoryChoices' => $categoryChoices,
                     'categoryName' => htmlspecialchars(strip_tags($categoryName), ENT_QUOTES, 'UTF-8'),
@@ -481,7 +461,7 @@ class JobController {
                     $title = 'Jobs';
 
                     foreach ($allJobs as $job) {
-                        foreach ($categories as $category) {
+                        foreach ($this->categories as $category) {
                             if ($job->categoryId == $category->id && $job->active == 1) {
                                 $filteredCategories[] = $category->name;
                             }
@@ -492,7 +472,7 @@ class JobController {
                     $title = 'Archived Jobs';
 
                     foreach ($allJobs as $job) {
-                        foreach ($categories as $category) {
+                        foreach ($this->categories as $category) {
                             if ($job->categoryId == $category->id && $job->active == 0) {
                                 $filteredCategories[] = $category->name;
                             }
@@ -503,7 +483,6 @@ class JobController {
                 $categoryChoices = array_unique($filteredCategories);
 
                 $variables = [
-                    'categories' => $categories,
                     'title' => $title,
                     'categoryChoices' => $categoryChoices,
                     'parameters' => $parameters
@@ -527,7 +506,7 @@ class JobController {
                     $filteredJobs[] = $job;
 
                 foreach ($jobs as $job) {
-                    foreach ($categories as $category) {
+                    foreach ($this->categories as $category) {
                         if ($job->categoryId == $category->id && $job->active == 1) {
                             $filteredCategories[] = $category->name;
                         }
@@ -542,7 +521,7 @@ class JobController {
                     $filteredJobs[] = $job;
 
                 foreach ($jobs as $job) {
-                    foreach ($categories as $category) {
+                    foreach ($this->categories as $category) {
                         if ($job->categoryId == $category->id && $job->active == 0) {
                             $filteredCategories[] = $category->name;
                         }
@@ -553,7 +532,6 @@ class JobController {
             $categoryChoices = array_unique($filteredCategories);
 
             $variables = [
-                'categories' => $categories,
                 'title' => $title,
                 'categoryChoices' => $categoryChoices,
                 'jobs' => $filteredJobs,
@@ -570,7 +548,6 @@ class JobController {
     }
 
     public function listApplicants() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
         $jobs = $this->jobsTable->retrieveRecord('id', $this->get['id']);
 
         if (!empty($jobs)) {
@@ -578,7 +555,6 @@ class JobController {
 
             if ($job->userId == $_SESSION['id']) {
                 $variables = [
-                    'categories' => $categories,
                     'title' => $job->title,
                     'applicants' => $job->listApplicants()                
                 ];

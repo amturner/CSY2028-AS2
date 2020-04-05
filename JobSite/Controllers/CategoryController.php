@@ -2,23 +2,23 @@
 namespace JobSite\Controllers;
 class CategoryController {
     private $categoriesTable;
+    private $categories;
     private $get;
     private $post;
 
     public function __construct(\CSY2028\DatabaseTable $categoriesTable, $get, $post) {
         $this->categoriesTable = $categoriesTable;
+        $this->categories = $this->categoriesTable->retrieveAllRecords();
         $this->get = $get;
         $this->post = $post;
     }
 
     public function listCategories() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
-
         return [
             'layout' => 'sidebarlayout.html.php',
             'template' => 'admin/categories.html.php',
             'variables' => [
-                'categories' => $categories
+                'categories' => $this->categories
             ],
             'title' => 'Admin Panel - Categories'
         ];
@@ -26,8 +26,6 @@ class CategoryController {
 
     public function editCategorySubmit() {
         if (isset($this->post['submit'])) {
-            $categories = $this->categoriesTable->retrieveAllRecords();
-
             if (isset($this->get['id']))
                 $category = $this->categoriesTable->retrieveRecord('id', $this->get['id'])[0];
             else
@@ -52,7 +50,7 @@ class CategoryController {
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/editcategorysuccess.html.php',
                     'variables' => [
-                        'categories' => $categories,
+                        'categories' => $this->categories,
                         'name' => htmlspecialchars(strip_tags($this->post['category']['name']), ENT_QUOTES, 'UTF-8')
                     ],
                     'title' => 'Admin Panel - ' . $pageName
@@ -69,7 +67,7 @@ class CategoryController {
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/editcategory.html.php',
                     'variables' => [
-                        'categories' => $categories,
+                        'categories' => $this->categories,
                         'errors' => $errors,
                         'category' => $category
                     ],
@@ -80,8 +78,6 @@ class CategoryController {
     }
 
     public function editCategoryForm() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
-
         if (isset($this->get['id'])) {
             $category = $this->categoriesTable->retrieveRecord('id', $this->get['id'])[0];
 
@@ -89,7 +85,7 @@ class CategoryController {
                 'layout' => 'sidebarlayout.html.php',
                 'template' => 'admin/editcategory.html.php',
                 'variables' => [
-                    'categories' => $categories,
+                    'categories' => $this->categories,
                     'category' => $category
                 ],
                 'title' => 'Admin Panel - Edit Category'
@@ -100,7 +96,7 @@ class CategoryController {
                 'layout' => 'sidebarlayout.html.php',
                 'template' => 'admin/editcategory.html.php',
                 'variables' => [
-                    'categories' => $categories
+                    'categories' => $this->categories
                 ],
                 'title' => 'Admin Panel - Add Category'
             ];

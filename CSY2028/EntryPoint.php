@@ -36,10 +36,11 @@ class EntryPoint {
         
         $page = $controller->$functionName($parameters);
 
-        $nav = $this->loadTemplate('../templates/nav.html.php', $page['variables']);
+        $title = $page['title'];
         $output = $this->loadTemplate('../templates/' . $page['template'], $page['variables']);
 
-        $title = $page['title'];
+        $templateVariables = $this->routes->getTemplateVariables();
+        extract($templateVariables);
 
         require '../templates/' . $page['layout'];
     }

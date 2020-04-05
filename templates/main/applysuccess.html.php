@@ -1,9 +1,3 @@
-<section class="left">
-    <?php require 'jobnav.html.php'; ?>
-</section>
+<h2>Apply for <?=$title;?></h2>
 
-<section class="right">
-    <h2>Apply for <?=$title;?></h2>
-
-    <p>Your application has successfully been submitted!</p>
-</section>
+<p>Your application has successfully been submitted!</p>

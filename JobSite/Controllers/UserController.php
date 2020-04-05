@@ -2,26 +2,22 @@
 namespace JobSite\Controllers;
 class UserController {
     private $usersTable;
-    private $categoriesTable;
     private $get;
     private $post;
 
-    public function __construct(\CSY2028\DatabaseTable $usersTable, \CSY2028\DatabaseTable $categoriesTable, $get, $post) {
+    public function __construct(\CSY2028\DatabaseTable $usersTable, $get, $post) {
         $this->usersTable = $usersTable;
-        $this->categoriesTable = $categoriesTable;
         $this->get = $get;
         $this->post = $post;
     }
 
     public function listUsers() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
         $users = $this->usersTable->retrieveAllRecords();
 
         return [
             'layout' => 'sidebarlayout.html.php',
             'template' => 'admin/users.html.php',
             'variables' => [
-                'categories' => $categories,
                 'users' => $users
             ],
             'title' => 'Admin Panel - Users'
@@ -30,8 +26,6 @@ class UserController {
 
     public function editUserSubmit() {
         if (isset($this->post['submit'])) {
-            $categories = $this->categoriesTable->retrieveAllRecords();
-
             if (isset($this->get['id']))
                 $user = $this->usersTable->retrieveRecord('id', $this->get['id'])[0];
             else
@@ -101,14 +95,10 @@ class UserController {
     
                 $this->usersTable->save($this->post['user']);
     
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'admin/editusersuccess.html.php',
-                    'variables' => [
-                        'categories' => $categories,
-                        'username' => htmlspecialchars(strip_tags($this->post['user']['username']), ENT_QUOTES, 'UTF-8')
-                    ],
-                    'title' => 'Admin Panel - ' . $pageName
+                $template = 'admin/editusersuccess.html.php';
+
+                $variables = [
+                    'username' => htmlspecialchars(strip_tags($this->post['user']['username']), ENT_QUOTES, 'UTF-8')
                 ];
             }
             // Display the registration form with any generated errors.
@@ -118,23 +108,24 @@ class UserController {
                 else
                     $pageName = 'Add User';
 
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'admin/edituser.html.php',
-                    'variables' => [
-                        'categories' => $categories,
-                        'errors' => $errors,
-                        'user' => $user
-                    ],
-                    'title' => 'Admin Panel ' . $pageName
+                $template = 'admin/edituser.html.php';
+                
+                $variables = [
+                    'errors' => $errors,
+                    'user' => $user
                 ];
             }
         }
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => $template,
+            'variables' => $variables,
+            'title' => 'Admin Panel ' . $pageName
+        ];
     }
 
     public function editUserForm() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
-
         if (isset($this->get['id'])) {
             $user = $this->usersTable->retrieveRecord('id', $this->get['id'])[0];
 
@@ -143,7 +134,6 @@ class UserController {
                     'layout' => 'sidebarlayout.html.php',
                     'template' => 'admin/edituser.html.php',
                     'variables' => [
-                        'categories' => $categories,
                         'user' => $user
                     ],
                     'title' => 'Admin Panel - Edit User'
@@ -156,9 +146,7 @@ class UserController {
             return [
                 'layout' => 'sidebarlayout.html.php',
                 'template' => 'admin/edituser.html.php',
-                'variables' => [
-                    'categories' => $categories
-                ],
+                'variables' => [],
                 'title' => 'Admin Panel - Add User'
             ];         
         }
@@ -227,14 +215,11 @@ class UserController {
 
     public function loginForm() {
         session_start();
-        $categories = $this->categoriesTable->retrieveAllRecords();
         if (!isset($_SESSION['loggedIn'])) {
             return [
                 'layout' => 'mainlayout.html.php',
                 'template' => 'admin/login.html.php',
-                'variables' => [
-                    'categories' => $categories
-                ],
+                'variables' => [],
                 'title' => 'Log in'
             ];
         }
@@ -242,9 +227,7 @@ class UserController {
             header('Location: /admin');
     }
 
-    public function logout() {
-        $categories = $this->categoriesTable->retrieveAllRecords();
-        
+    public function logout() {     
         unset($_SESSION['loggedIn']);
         unset($_SESSION['isOwner']);
         unset($_SESSION['isAdmin']);
@@ -256,9 +239,7 @@ class UserController {
         return [
             'layout' => 'mainlayout.html.php',
             'template' => 'admin/logout.html.php',
-            'variables' => [
-                'categories' => $categories
-            ],
+            'variables' => [],
             'title' => 'Log out'
         ];
     }
