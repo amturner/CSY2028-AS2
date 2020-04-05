@@ -1,13 +1,8 @@
 <?php
 require 'CSY2028/DatabaseTable.php';
-require 'JobSite/Controllers/JobSiteController.php';
-require 'JobSite/Controllers/AdminController.php';
-require 'JobSite/Controllers/JobController.php';
 require 'JobSite/Controllers/UserController.php';
-require 'JobSite/Controllers/CategoryController.php';
-require 'JobSite/Controllers/EnquiryController.php';
 
-class ControllersTest extends \PHPUnit\Framework\TestCase {    
+class UserControllerTest extends \PHPUnit\Framework\TestCase {    
     /* User Controller Tests */
     /*
     public function testRegister() {
