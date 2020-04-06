@@ -350,7 +350,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
         $user = $this->pdo->query('SELECT id, username FROM users WHERE username = "phpunit";')->fetch();
 
         $this->assertNull($user['username']);
-        $this->pdo->query('ALTER TABLE users AUTO_INCREMENT = 6');
+        $this->pdo->query('ALTER TABLE users AUTO_INCREMENT = 6;');
     }
 
     // Log in Tests

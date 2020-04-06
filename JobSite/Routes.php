@@ -294,18 +294,21 @@ class Routes implements \CSY2028\Routes {
         return $routes;
     }
 
+    // Function for passing variables to the site layout.
     public function getTemplateVariables() {
         return [
             'categories' => $this->categoriesTable->retrieveAllRecords()
         ];
     }
 
+    // Function for checking whether a user is currently logged in.
 	public function checkLogin() {
 		session_start();
 		if (!isset($_SESSION['loggedIn']))
 			header('Location: /admin/login');
     }
 
+    // Function for checking whether a user has an appropriate level of access.
     public function checkAccess() {
         $this->updateRole();
         if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']))
@@ -314,12 +317,14 @@ class Routes implements \CSY2028\Routes {
             header('Location: /admin/access-restricted');
     }
 
+    // Function for updating the user's role.
     public function updateRole() {
         if (isset($_SESSION['id'])) {
             require '../dbConnection.php';
             $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id', '\JobSite\Entities\User');
             $user = $usersTable->retrieveRecord('id', $_SESSION['id'])[0];
     
+            // Check the user's current role frm the database and update $_SESSION variables accordingly.
             if ($user->role == 3 && !isset($_SESSION['isOwner'])) {
                 $_SESSION['isOwner'] = true;
                 unset($_SESSION['isAdmin']);

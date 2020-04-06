@@ -553,7 +553,7 @@ class JobController {
         if (!empty($jobs)) {
             $job = $jobs[0];
 
-            if ($job->userId == $_SESSION['id']) {
+            if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']) || $job->userId == $_SESSION['id']) {
                 $variables = [
                     'title' => $job->title,
                     'applicants' => $job->listApplicants()                

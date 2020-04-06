@@ -12,13 +12,12 @@ class JobSiteController {
 
         $filteredJobs = [];
 
-        if (count($jobs) < 10)
-            $count = count($job);
-        else
-            $count = 10;
-
-        for ($i=0; $i<$count; $i++)
+        for ($i=0; $i<10; $i++) {
+            if (!isset($jobs[$i]))
+                break;
+            
             $filteredJobs[] = $jobs[$i];
+        }
 
         return [
             'layout' => 'mainlayout.html.php',

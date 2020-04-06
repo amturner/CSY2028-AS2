@@ -46,14 +46,9 @@ class CategoryController {
 
                 $this->categoriesTable->save($this->post['category']);
 
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'admin/editcategorysuccess.html.php',
-                    'variables' => [
-                        'categories' => $this->categories,
-                        'name' => htmlspecialchars(strip_tags($this->post['category']['name']), ENT_QUOTES, 'UTF-8')
-                    ],
-                    'title' => 'Admin Panel - ' . $pageName
+                $variables = [
+                    'categories' => $this->categories,
+                    'name' => htmlspecialchars(strip_tags($this->post['category']['name']), ENT_QUOTES, 'UTF-8')
                 ];
             }
             // Display the edit form with any generated errors.
@@ -63,18 +58,20 @@ class CategoryController {
                 else
                     $pageName = 'Add Category';
 
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'admin/editcategory.html.php',
-                    'variables' => [
-                        'categories' => $this->categories,
-                        'errors' => $errors,
-                        'category' => $category
-                    ],
-                    'title' => 'Admin Panel - ' . $pageName
+                $variables = [
+                    'categories' => $this->categories,
+                    'errors' => $errors,
+                    'category' => $category
                 ];
             }
         }
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => 'admin/editcategory.html.php',
+            'variables' => $variables,
+            'title' => 'Admin Panel - ' . $pageName
+        ];
     }
 
     public function editCategoryForm() {

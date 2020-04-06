@@ -2,7 +2,8 @@
 <phpunit>
     <testsuites>
         <testsuite name="tests">
-            <directory>tests</directory>
+            <directory>tests/controllers</directory>
+            <directory>tests/entities</directory>
         </testsuite>
     </testsuites>
     <filter>
@@ -11,6 +12,7 @@
             <file>JobSite/Controllers/JobSiteController.php</file>
             <file>JobSite/Controllers/AdminController.php</file>
             <file>JobSite/Controllers/JobController.php</file>
+            <file>JobSite/Entities/Job.php</file>
             <file>JobSite/Controllers/UserController.php</file>
             <file>JobSite/Controllers/CategoryController.php</file>
             <file>JobSite/Controllers/EnquiryController.php</file>

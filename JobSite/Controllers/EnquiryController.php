@@ -137,21 +137,22 @@ class EnquiryController {
 
                 $variables = [];
             }
-            else
+            else {
                 $template = 'admin/reply.html.php';
 
                 $variables = [
                     'errors' => $errors,
                     'enquiry' => $enquiry
-                ];
-                
-            return [
-                'layout' => 'sidebarlayout.html.php',
-                'template' => $template,
-                'variables' => $variables,
-                'title' => 'Admin Panel - Enquriries - Reply'
-            ];
+                ];               
+            }
         }
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => $template,
+            'variables' => $variables,
+            'title' => 'Admin Panel - Enquriries - Reply'
+        ];
     }
 
     public function replyEnquiryForm() {
@@ -172,6 +173,7 @@ class EnquiryController {
 
     public function deleteEnquiry() {
         $this->enquiriesTable->deleteRecordById($this->post['enquiry']['id']);
+        $this->enquiryRepliesTable->deleteRecord('enquiry_id', $this->post['enquiry']['id']);
 
         header('Location: /admin/enquiries');
     }
