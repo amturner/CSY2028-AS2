@@ -14,16 +14,16 @@
     <p class="required">Required: </p>
     <input type="hidden" name="user[id]" value="<?=(isset($_GET['id'])) ? $user->id : '';?>" />
     <label class="required" for="username">Username</label> 
-    <input type="text" name="user[username]" id="username" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($user->username), ENT_QUOTES, 'UTF-8') : '';?>" <?=(isset($_GET['id'])) ? 'readonly' : '';?>>
+    <input type="text" name="user[username]" id="username" value="<?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($user->username), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['user'])) { echo $_POST['user']['username']; } ?>" <?=(isset($_GET['id'])) ? 'readonly' : '';?>>
     
     <label class="required" for="firstname">First Name</label> 
-    <input type="text" name="user[firstname]" id="firstname" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($user->firstname), ENT_QUOTES, 'UTF-8') : '';?>">
+    <input type="text" name="user[firstname]" id="firstname" value="<?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($user->firstname), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['user'])) { echo $_POST['user']['firstname']; } ?>">
     
     <label class="required" for="surname">Surname</label> 
-    <input type="text" name="user[surname]" id="surname" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($user->surname), ENT_QUOTES, 'UTF-8') : '';?>">
+    <input type="text" name="user[surname]" id="surname" value="<?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($user->surname), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['user'])) { echo $_POST['user']['surname']; } ?>">
     
     <label class="required" for="email">Email Address</label> 
-    <input type="text" name="user[email]" id="email" value="<?=(isset($_GET['id'])) ? htmlspecialchars(strip_tags($user->email), ENT_QUOTES, 'UTF-8') : '';?>">
+    <input type="text" name="user[email]" id="email" value="<?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($user->email), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['user'])) { echo $_POST['user']['email']; } ?>">
     
     <label <?=(!isset($_GET['id'])) ? 'class="required"' : '';?> for="password">Password</label> 
     <input type="password" name="user[password]" id="passsword">

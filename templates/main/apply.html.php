@@ -12,13 +12,13 @@
     <?php endif; ?>
     <form action="" method="POST" enctype="multipart/form-data">
         <label>Your name</label>
-        <input type="text" name="apply[name]" />
+        <input type="text" name="apply[name]" value="<?=(isset($_POST['apply'])) ? $_POST['apply']['name'] : '';?>" />
 
         <label>E-mail address</label>
-        <input type="text" name="apply[email]" />
+        <input type="text" name="apply[email]" value="<?=(isset($_POST['apply'])) ? $_POST['apply']['email'] : '';?>" />
 
         <label>Cover letter</label>
-        <textarea name="apply[details]"></textarea>
+        <textarea name="apply[details]"><?=(isset($_POST['apply'])) ? $_POST['apply']['details'] : '';?></textarea>
 
         <label>CV</label>
         <input type="file" name="cv" />

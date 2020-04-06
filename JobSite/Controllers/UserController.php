@@ -84,7 +84,7 @@ class UserController {
                 else
                     $pageName = 'User Added';
 
-                $this->post['user']['username'] = htmlspecialchars(strip_tags($this->post['user']['username']), ENT_QUOTES, 'UTF-8');
+                $this->post['user']['username'] = strtolower(htmlspecialchars(strip_tags($this->post['user']['username']), ENT_QUOTES, 'UTF-8'));
                 $this->post['user']['firstname'] = htmlspecialchars(strip_tags($this->post['user']['firstname']), ENT_QUOTES, 'UTF-8');
                 $this->post['user']['surname'] = htmlspecialchars(strip_tags($this->post['user']['surname']), ENT_QUOTES, 'UTF-8');
 
@@ -162,7 +162,7 @@ class UserController {
         if (isset($this->post['submit'])) {
             $user = $this->usersTable->retrieveRecord('username', $this->post['login']['username']);
 
-            $username = $this->post['login']['username'];
+            $username = strtolower($this->post['login']['username']);
             $password = $this->post['login']['password'];
             $passwordWithUsername = $username . $password;
 
