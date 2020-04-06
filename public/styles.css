@@ -68,6 +68,7 @@ pre code {display: block;}
 
 footer {background-color: #4b72ad; padding: 10px; color: white;}
 
+form{ clear: both; }
 form select, form label, form input, form button, form textarea {float: left; width: 200px; padding: 10px; margin-top: 20px;}
 form label {clear: left;}
 textarea {height: 100px;}
@@ -173,4 +174,15 @@ form .required::after {
 }
 .closing-soon .job:last-child {
 	border: none;
+}
+
+/* Clearfix */
+/* Source: https://css-tricks.com/snippets/css/clear-fix/ */
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
 }
