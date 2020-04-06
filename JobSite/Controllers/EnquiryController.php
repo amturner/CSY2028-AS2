@@ -135,7 +135,9 @@ class EnquiryController {
                 
                 $template = 'admin/replysuccess.html.php';
 
-                $variables = [];
+                $variables = [
+                    'enquiry' => $enquiry
+                ];
             }
             else {
                 $template = 'admin/reply.html.php';

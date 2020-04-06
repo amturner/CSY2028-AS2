@@ -25,7 +25,7 @@
                 <td><?=htmlspecialchars(strip_tags($enquiry->getFullName('firstname')), ENT_QUOTES, 'UTF-8');?></td>
                 <td><?=htmlspecialchars(strip_tags($enquiry->email), ENT_QUOTES, 'UTF-8');?></td>
                 <td><?=$enquiry->phone;?></td>
-                <td><?=htmlspecialchars(strip_tags($enquiry->message), ENT_QUOTES, 'UTF-8');?></td>
+                <td><?=htmlspecialchars_decode(strip_tags($enquiry->message), ENT_QUOTES);?></td>
                 <td><a style="float: right" href="/admin/enquiries/reply?id=<?=$enquiry->id;?>">Reply</a></td>
                 
                 <td>
@@ -48,7 +48,7 @@
                         <b>Email</b>: <?=$enquiry->email;?><br>
                         <b>Phone</b>: <?=$enquiry->phone;?><br><br>
                         <b>Message</b>:<br>
-                        <?=strip_tags(nl2br(htmlspecialchars($enquiry->message, ENT_QUOTES, 'UTF-8')), '<br>');?>
+                        <?=strip_tags(nl2br(htmlspecialchars_decode($enquiry->message, ENT_QUOTES)), '<br>');?>
                     </p>
                 </div>
 
@@ -62,7 +62,7 @@
                                         <b>Name</b>: <?=$user->getFullName('surname');?><br>
                                         <b>Email</b>: <?=$user->email;?><br><br>
                                         <b>Message</b>:<br>
-                                        <?=strip_tags(nl2br(htmlspecialchars($reply->message, ENT_QUOTES, 'UTF-8')), '<br>');?>
+                                        <?=strip_tags(nl2br(htmlspecialchars_decode($reply->message, ENT_QUOTES)), '<br>');?>
                                     </p>
                                 </div>
                             <?php endif; ?>
