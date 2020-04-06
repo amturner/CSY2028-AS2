@@ -100,12 +100,19 @@ class JobController {
             if (!empty($this->jobsTable->retrieveRecord('id', $this->get['id'])[0])) {
                 $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
 
-                $title = 'Apply';
+                if ($job->active == 1) {
+                    $title = 'Apply';
 
-                $variables = [
-                    'title' => htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8'),
-                    'jobId' => $job->id
-                ];
+                    $variables = [
+                        'title' => htmlspecialchars(strip_tags($job->title), ENT_QUOTES, 'UTF-8'),
+                        'jobId' => $job->id
+                    ];
+                }
+                else {
+                    $title = 'Apply - Job Not Found';
+    
+                    $variables = [];
+                }          
             }
             else {
                 $title = 'Apply - Job Not Found';

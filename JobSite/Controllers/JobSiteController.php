@@ -10,13 +10,25 @@ class JobSiteController {
     public function home($parameters) {
         $jobs = $this->jobsTable->retrieveAllRecords('closingDate', 'ASC');
 
+        foreach ($jobs as $job) {
+            if (date('Y-m-d') > $job->closingDate) {
+                $values = [
+                    'id' => $job->id,
+                    'active' => 0
+                ];
+
+                $this->jobsTable->save($values);
+            }
+        }
+
         $filteredJobs = [];
 
         for ($i=0; $i<10; $i++) {
             if (!isset($jobs[$i]))
                 break;
             
-            $filteredJobs[] = $jobs[$i];
+            if (date('Y-m-d') < $jobs[$i]->closingDate)
+                $filteredJobs[] = $jobs[$i];
         }
 
         return [
