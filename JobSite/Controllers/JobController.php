@@ -8,8 +8,9 @@ class JobController {
     private $categories;
     private $get;
     private $post;
+    private $files;
 
-    public function __construct(\CSY2028\DatabaseTable $jobsTable, \CSY2028\DatabaseTable $applicantsTable, \CSY2028\DatabaseTable $locationsTable, \CSY2028\DatabaseTable $categoriesTable, $get, $post) {
+    public function __construct(\CSY2028\DatabaseTable $jobsTable, \CSY2028\DatabaseTable $applicantsTable, \CSY2028\DatabaseTable $locationsTable, \CSY2028\DatabaseTable $categoriesTable, $get, $post, $files) {
         $this->jobsTable = $jobsTable;
         $this->applicantsTable = $applicantsTable;
         $this->locationsTable = $locationsTable;
@@ -17,6 +18,7 @@ class JobController {
         $this->categories = $this->categoriesTable->retrieveAllRecords();
         $this->get = $get;
         $this->post = $post;
+        $this->files = $files;
     }
 
     public function applySubmit() {
@@ -40,13 +42,13 @@ class JobController {
             if ($this->post['apply']['details'] == '')
                 $errors[] = 'Your cover letter cannot be blank.';
 
-            if ($_FILES['cv']['error'] != 4) {
-                $parts = explode('.', $_FILES['cv']['name']);
+            if ($this->files['cv']['error'] != 4) {
+                $parts = explode('.', $this->files['cv']['name']);
                 $extension = end($parts);
                 $fileName = uniqid() . '.' . $extension;
-                move_uploaded_file($_FILES['cv']['tmp_name'], 'cvs/' . $fileName);
+                move_uploaded_file($this->files['cv']['tmp_name'], 'cvs/' . $fileName);
             
-                if ($_FILES['cv']['error'] == 1)
+                if ($this->files['cv']['error'] == 1)
                     $errors[] = 'There was an error uploading your CV.';
             }
             else {
@@ -60,33 +62,37 @@ class JobController {
                     'details' => htmlspecialchars(strip_tags($this->post['apply']['details']), ENT_QUOTES, 'UTF-8'),
                     'jobId' => $jobId,
                     'cv' => $fileName
-
                 ];
 
                 $this->applicantsTable->save($values);
 
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'main/applysuccess.html.php',
-                    'variables' => [
-                        'title' => $jobTitle
-                    ],
-                    'title' => 'Jobs - Apply'
+                $template = 'main/applysuccess.html.php';
+
+                $variables = [
+                    'title' => $jobTitle
                 ];
+                
+                $title = 'Jobs - Apply';
             }
             else {
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'main/apply.html.php',
-                    'variables' => [
-                        'title' => $jobTitle,
-                        'jobId' => $jobId,
-                        'errors' => $errors
-                    ],
-                    'title' => 'Jobs - Apply'
-                ]; 
+                $template = 'main/apply.html.php';
+
+                $variables = [
+                    'title' => $jobTitle,
+                    'jobId' => $jobId,
+                    'errors' => $errors
+                ];
+
+                $title = 'Jobs - Apply';
             }
         }
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => $template,
+            'variables' => $variables,
+            'title' => $title
+        ]; 
     }
 
     public function applyForm() {
@@ -159,13 +165,10 @@ class JobController {
 
                 $this->jobsTable->save($this->post['job']);
 
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'admin/editjobsuccess.html.php',
-                    'variables' => [
-                        'title' => htmlspecialchars(strip_tags($this->post['job']['title']), ENT_QUOTES, 'UTF-8')
-                    ],
-                    'title' => 'Admin Panel - ' . $pageName
+                $template = 'admin/editjobsuccess.html.php';
+
+                $variables = [
+                    'title' => htmlspecialchars(strip_tags($this->post['job']['title']), ENT_QUOTES, 'UTF-8')
                 ];
             }
             // Display the edit form with any generated errors.
@@ -175,19 +178,23 @@ class JobController {
                 else
                     $pageName = 'Add Job';
 
-                return [
-                    'layout' => 'sidebarlayout.html.php',
-                    'template' => 'admin/editjob.html.php',
-                    'variables' => [
-                        'categories' => $this->categories,
-                        'locations' => $locations,
-                        'errors' => $errors,
-                        'job' => $job
-                    ],
-                    'title' => 'Admin Panel - ' . $pageName
+                $template = 'admin/editjob.html.php';
+
+                $variables = [
+                    'categories' => $this->categories,
+                    'locations' => $locations,
+                    'errors' => $errors,
+                    'job' => $job
                 ];
             }
         }
+
+        return [
+            'layout' => 'sidebarlayout.html.php',
+            'template' => $template,
+            'variables' => $variables,
+            'title' => 'Admin Panel - ' . $pageName
+        ];
     }
 
     public function editJobForm() {
@@ -195,7 +202,7 @@ class JobController {
 
         if (isset($this->get['id'])) {
             $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
-            if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
+            if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']) || $job->userId == $_SESSION['id']) {
                 
                 $variables = [
                     'categories' => $this->categories,
@@ -383,9 +390,6 @@ class JobController {
     public function listJobsAdmin($parameters) {
         $allJobs = $this->jobsTable->retrieveAllRecords();
 
-        if (empty($parameters))
-            header('Location: /admin/jobs/active');
-
         foreach ($allJobs as $job) {
             if (date('Y-m-d') > $job->closingDate) {
                 $values = [
@@ -397,17 +401,104 @@ class JobController {
             }
         }
 
-        if (isset($this->get['category']) && $this->get['category'] != 'All') {
-            if (!empty($this->categoriesTable->retrieveRecord('name', ucwords(urldecode($this->get['category']))))) {
-                $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($this->get['category'])));
-                $categoryByFilter = $categoriesByFilter[0];
+        if (!empty($parameters)) {
+            if (isset($this->get['category']) && $this->get['category'] != 'All') {
+                if (!empty($this->categoriesTable->retrieveRecord('name', ucwords(urldecode($this->get['category']))))) {
+                    $categoriesByFilter = $this->categoriesTable->retrieveRecord('name', ucwords(urldecode($this->get['category'])));
+                    $categoryByFilter = $categoriesByFilter[0];
 
-                if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
-                    $jobs = $this->jobsTable->retrieveAllRecords();
+                    if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee'])) {
+                        $jobs = $this->jobsTable->retrieveAllRecords();
+                    }
+                    else {
+                        $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
+                    }
+
+                    $filteredJobs = [];
+                    $filteredCategories = [];
+
+                    if ($parameters[0] == 'active') {
+                        $title = 'Jobs';
+
+                        foreach ($jobs as $job)
+                        if ($job->categoryId == $categoryByFilter->id && $job->active == 1)
+                            $filteredJobs[] = $job;
+
+                        foreach ($jobs as $job) {
+                            foreach ($categories as $category) {
+                                if ($job->categoryId == $category->id && $job->active == 1) {
+                                    $filteredCategories[] = $category->name;
+                                }
+                            }
+                        }
+                    }
+                    elseif ($parameters[0] == 'archived') {
+                        $title = 'Archived Jobs';
+
+                        foreach ($jobs as $job)
+                            if ($job->categoryId == $categoryByFilter->id && $job->active == 0)
+                                $filteredJobs[] = $job;
+
+                        foreach ($jobs as $job) {
+                            foreach ($categories as $category) {
+                                if ($job->categoryId == $category->id && $job->active == 0) {
+                                    $filteredCategories[] = $category->name;
+                                }
+                            }
+                        }                    
+                    }
+
+                    $categoryChoices = array_unique($filteredCategories);
+                    $categoryName = $categoryByFilter->name;
+
+                    $variables = [
+                        'title' => $title,
+                        'categoryChoices' => $categoryChoices,
+                        'categoryName' => htmlspecialchars(strip_tags($categoryName), ENT_QUOTES, 'UTF-8'),
+                        'jobs' => $filteredJobs,
+                        'parameters' => $parameters
+                    ];
                 }
                 else {
-                    $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
+                    $filteredCategories = [];
+
+                    if ($parameters[0] == 'active') {
+                        $title = 'Jobs';
+
+                        foreach ($allJobs as $job) {
+                            foreach ($this->categories as $category) {
+                                if ($job->categoryId == $category->id && $job->active == 1) {
+                                    $filteredCategories[] = $category->name;
+                                }
+                            }
+                        }
+                    }
+                    elseif ($parameters[0] == 'archived') {
+                        $title = 'Archived Jobs';
+
+                        foreach ($allJobs as $job) {
+                            foreach ($this->categories as $category) {
+                                if ($job->categoryId == $category->id && $job->active == 0) {
+                                    $filteredCategories[] = $category->name;
+                                }
+                            }
+                        }
+                    }
+
+                    $categoryChoices = array_unique($filteredCategories);
+
+                    $variables = [
+                        'title' => $title,
+                        'categoryChoices' => $categoryChoices,
+                        'parameters' => $parameters
+                    ];
                 }
+            }
+            else {
+                if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']))
+                    $jobs = $this->jobsTable->retrieveAllRecords();
+                else
+                    $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
 
                 $filteredJobs = [];
                 $filteredCategories = [];
@@ -416,11 +507,11 @@ class JobController {
                     $title = 'Jobs';
 
                     foreach ($jobs as $job)
-                    if ($job->categoryId == $categoryByFilter->id && $job->active == 1)
+                    if ($job->active == 1)
                         $filteredJobs[] = $job;
 
                     foreach ($jobs as $job) {
-                        foreach ($categories as $category) {
+                        foreach ($this->categories as $category) {
                             if ($job->categoryId == $category->id && $job->active == 1) {
                                 $filteredCategories[] = $category->name;
                             }
@@ -431,112 +522,30 @@ class JobController {
                     $title = 'Archived Jobs';
 
                     foreach ($jobs as $job)
-                    if ($job->categoryId == $categoryByFilter->id && $job->active == 0)
+                    if ($job->active == 0)
                         $filteredJobs[] = $job;
 
                     foreach ($jobs as $job) {
-                        foreach ($categories as $category) {
+                        foreach ($this->categories as $category) {
                             if ($job->categoryId == $category->id && $job->active == 0) {
                                 $filteredCategories[] = $category->name;
                             }
                         }
-                    }                    
+                    }
                 }
 
                 $categoryChoices = array_unique($filteredCategories);
-                $categoryName = $categoryByFilter->name;
 
                 $variables = [
                     'title' => $title,
                     'categoryChoices' => $categoryChoices,
-                    'categoryName' => htmlspecialchars(strip_tags($categoryName), ENT_QUOTES, 'UTF-8'),
                     'jobs' => $filteredJobs,
-                    'parameters' => $parameters
-                ];
-            }
-            else {
-                $filteredCategories = [];
-
-                if ($parameters[0] == 'active') {
-                    $title = 'Jobs';
-
-                    foreach ($allJobs as $job) {
-                        foreach ($this->categories as $category) {
-                            if ($job->categoryId == $category->id && $job->active == 1) {
-                                $filteredCategories[] = $category->name;
-                            }
-                        }
-                    }
-                }
-                elseif ($parameters[0] == 'archived') {
-                    $title = 'Archived Jobs';
-
-                    foreach ($allJobs as $job) {
-                        foreach ($this->categories as $category) {
-                            if ($job->categoryId == $category->id && $job->active == 0) {
-                                $filteredCategories[] = $category->name;
-                            }
-                        }
-                    }
-                }
-
-                $categoryChoices = array_unique($filteredCategories);
-
-                $variables = [
-                    'title' => $title,
-                    'categoryChoices' => $categoryChoices,
                     'parameters' => $parameters
                 ];
             }
         }
         else {
-            if (isset($_SESSION['isOwner']) || isset($_SESSION['isAdmin']) || isset($_SESSION['isEmployee']))
-                $jobs = $this->jobsTable->retrieveAllRecords();
-            else
-                $jobs = $this->jobsTable->retrieveRecord('userId', $_SESSION['id']);
-
-            $filteredJobs = [];
-            $filteredCategories = [];
-
-            if ($parameters[0] == 'active') {
-                $title = 'Jobs';
-
-                foreach ($jobs as $job)
-                if ($job->active == 1)
-                    $filteredJobs[] = $job;
-
-                foreach ($jobs as $job) {
-                    foreach ($this->categories as $category) {
-                        if ($job->categoryId == $category->id && $job->active == 1) {
-                            $filteredCategories[] = $category->name;
-                        }
-                    }
-                }
-            }
-            elseif ($parameters[0] == 'archived') {
-                $title = 'Archived Jobs';
-
-                foreach ($jobs as $job)
-                if ($job->active == 0)
-                    $filteredJobs[] = $job;
-
-                foreach ($jobs as $job) {
-                    foreach ($this->categories as $category) {
-                        if ($job->categoryId == $category->id && $job->active == 0) {
-                            $filteredCategories[] = $category->name;
-                        }
-                    }
-                }
-            }
-
-            $categoryChoices = array_unique($filteredCategories);
-
-            $variables = [
-                'title' => $title,
-                'categoryChoices' => $categoryChoices,
-                'jobs' => $filteredJobs,
-                'parameters' => $parameters
-            ];
+            header('Location: /admin/jobs/active');
         }
 
         return [

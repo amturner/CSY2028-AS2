@@ -22,7 +22,7 @@ class Job {
     }
 
     public function getCategoryName() {
-        return $this->categoriesTable->retrieveRecord('id', $this->categoryId)[0]->name;
+        return $this->categoriesTable->retrieveRecord('id', $this->categoryId)[0]->getCategoryName();
     }
 
     public function getFullLocation() {

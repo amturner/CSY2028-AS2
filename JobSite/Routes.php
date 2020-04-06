@@ -23,7 +23,7 @@ class Routes implements \CSY2028\Routes {
         $jobSiteController = new \JobSite\Controllers\JobSiteController($jobsTable);
         $adminController = new \JobSite\Controllers\AdminController();
         $categoryController = new \JobSite\Controllers\CategoryController($this->categoriesTable, $_GET, $_POST);
-        $jobController = new \JobSite\Controllers\JobController($jobsTable, $applicantsTable, $locationsTable, $this->categoriesTable, $_GET, $_POST);
+        $jobController = new \JobSite\Controllers\JobController($jobsTable, $applicantsTable, $locationsTable, $this->categoriesTable, $_GET, $_POST, $_FILES);
         $userController = new \JobSite\Controllers\UserController($usersTable, $_GET, $_POST);
         $enquiryController = new \JobSite\Controllers\EnquiryController($usersTable, $enquiriesTable, $enquiryRepliesTable, $_GET, $_POST);
 

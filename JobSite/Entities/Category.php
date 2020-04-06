@@ -13,7 +13,7 @@ class Category {
     }
 
     public function getCategoryName() {  
-        return $this->categoriesTable->retrieveRecord('id', $id)[0]->name;
+        return $this->categoriesTable->retrieveRecord('id', $this->id)[0]->name;
     }
 
     public function getJobsCount() {

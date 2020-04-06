@@ -12,10 +12,13 @@
             <file>JobSite/Controllers/JobSiteController.php</file>
             <file>JobSite/Controllers/AdminController.php</file>
             <file>JobSite/Controllers/JobController.php</file>
-            <file>JobSite/Entities/Job.php</file>
             <file>JobSite/Controllers/UserController.php</file>
             <file>JobSite/Controllers/CategoryController.php</file>
             <file>JobSite/Controllers/EnquiryController.php</file>
+            <file>JobSite/Entities/Job.php</file>
+            <file>JobSite/Entities/Category.php</file>
+            <file>JobSite/Entities/User.php</file>
+            <file>JobSite/Entities/Enquiry.php</file>
         </whitelist>
     </filter>
 </phpunit>
