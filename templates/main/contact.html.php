@@ -10,7 +10,7 @@
         </ul>
     </div>
 <?php endif; ?>
-<form action="" method="post">
+<form class="clearfix" action="" method="post">
     <p class="required">Required: </p>
     <label class="required" for="firstname">First Name</label>
     <input type="text" name="contact[firstname]" id="name" value="<?=(isset($_POST['contact'])) ? $_POST['contact']['firstname'] : '';?>">
