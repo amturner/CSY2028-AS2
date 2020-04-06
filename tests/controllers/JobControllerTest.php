@@ -746,6 +746,17 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
         $this->assertEmpty($form['variables']);
     }
 
+    public function testShowApplyFormWithInactiveJob() {
+        $testGetData = [
+            'id' => 4
+        ];
+
+        $jobController = new \JobSite\Controllers\JobController($this->jobsTable, $this->applicantsTable, $this->locationsTable, $this->categoriesTable, $testGetData, [], []);
+        $form = $jobController->applyForm();
+
+        $this->assertEmpty($form['variables']);
+    }
+
     public function testShowApplyFormWithValidId() {
         $testGetData = [
             'id' => 1

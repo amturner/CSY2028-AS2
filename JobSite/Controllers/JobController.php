@@ -249,7 +249,7 @@ class JobController {
     public function showJob() {
         $job = $this->jobsTable->retrieveRecord('id', $this->get['id'])[0];
 
-        if (empty($job))
+        if (empty($job) || $job->active == 0)
             header('Location: /jobs');
 
         return [
