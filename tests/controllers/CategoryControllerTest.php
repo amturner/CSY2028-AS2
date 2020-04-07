@@ -45,7 +45,7 @@ class CategoryControllerTest extends \PHPUnit\Framework\TestCase {
 
         $categoryController = new \JobSite\Controllers\CategoryController($this->categoriesTable, [], $testPostData);
         
-        $this->assertEquals(count($categoryController->editCategorySubmit()['variables']['errors']), 1);
+        $this->assertCount(1, $categoryController->editCategorySubmit()['variables']['errors']);
     }
 
     public function testCreateCategory() {
@@ -80,7 +80,7 @@ class CategoryControllerTest extends \PHPUnit\Framework\TestCase {
 
         $categoryController = new \JobSite\Controllers\CategoryController($this->categoriesTable, $testGetData, $testPostData);
         
-        $this->assertEquals(count($categoryController->editCategorySubmit()['variables']['errors']), 1);
+        $this->assertCount(1, $categoryController->editCategorySubmit()['variables']['errors']);
     }
 
     public function testEditCategory() {

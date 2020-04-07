@@ -11,6 +11,8 @@ class UserController {
         $this->post = $post;
     }
 
+    // Function for display a page that lists all users
+    // in the users table.
     public function listUsers() {
         $users = $this->usersTable->retrieveAllRecords();
 
@@ -24,6 +26,7 @@ class UserController {
         ];
     }
 
+    // Function for submitting the edit user form.
     public function editUserSubmit() {
         if (isset($this->post['submit'])) {
             if (isset($this->get['id']))
@@ -125,10 +128,15 @@ class UserController {
         ];
     }
 
+    // Function for displaying the edit user form. 
     public function editUserForm() {
+        // Check if $_GET['id'] has been set. If so, display
+        // a pre-filled edit user (Edit User) form.
         if (isset($this->get['id'])) {
             $user = $this->usersTable->retrieveRecord('id', $this->get['id'])[0];
 
+            // Check if the user has permission to access the details of another user.
+            // Redirect the user back to /admin/users if not.
             if (!empty($user) && (isset($_SESSION['isOwner']) || $this->get['id'] == $_SESSION['id'] || isset($_SESSION['isAdmin']) && ($user->role == 1 || $user->role == 0) || isset($_SESSION['isEmployee']) && $user->role == 0)) {
                 return [
                     'layout' => 'sidebarlayout.html.php',
@@ -142,6 +150,7 @@ class UserController {
             else
                 header('Location: /admin/users');
         }
+        // Display an empty edit user (Add User) form.
         else {
             return [
                 'layout' => 'sidebarlayout.html.php',
@@ -152,12 +161,14 @@ class UserController {
         }
     }
 
+    // Function for deleting a user from the database.
     public function deleteUser() {
         $this->usersTable->deleteRecordById($this->post['user']['id']);
 
         header('Location: /admin/users');
     }
 
+    // Function for submitting the login form.
     public function loginSubmit() {
         if (isset($this->post['submit'])) {
             $user = $this->usersTable->retrieveRecord('username', $this->post['login']['username']);
@@ -182,6 +193,8 @@ class UserController {
             else
                 $error = 'You have not provided a username and/or password.';
 
+            // Check if the $error variable has no value. If so,
+            // log the user into the system and set roles accordingly.
             if ($error == '') {
                 session_start();
 
@@ -213,8 +226,11 @@ class UserController {
         }
     }
 
+    // Function for displaying the login form.
     public function loginForm() {
         session_start();
+        // Check if is not already logged in. If so,
+        // display the form.
         if (!isset($_SESSION['loggedIn'])) {
             return [
                 'layout' => 'mainlayout.html.php',
@@ -227,7 +243,9 @@ class UserController {
             header('Location: /admin');
     }
 
-    public function logout() {     
+    // Function for logging the user out from the system.
+    public function logout() {   
+        // Unset all $_SESSION variables.
         unset($_SESSION['loggedIn']);
         unset($_SESSION['isOwner']);
         unset($_SESSION['isAdmin']);

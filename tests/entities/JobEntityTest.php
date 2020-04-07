@@ -41,7 +41,7 @@ class JobEntityTest extends \PHPUnit\Framework\TestCase {
     public function testGetClosingDate() {
         $job = $this->jobsTable->retrieveRecord('id', 1)[0];
 
-        $this->assertEquals($job->getClosingDate(), '02/05/2020');
+        $this->assertEquals($job->getClosingDate(), '31/07/2020');
     }
 
     public function testListApplicants() {

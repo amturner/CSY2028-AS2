@@ -1,6 +1,7 @@
 <?php
 namespace JobSite\Controllers;
 class AdminController {
+    // Function for displaying the admin home page.
     public function home() {
         return [
             'layout' => 'sidebarlayout.html.php',
@@ -10,6 +11,7 @@ class AdminController {
         ];
     }
 
+    // Function for displaying the access restricted page.
     public function accessRestricted() {
         return [
             'layout' => 'sidebarlayout.html.php',

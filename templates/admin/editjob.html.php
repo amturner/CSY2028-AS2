@@ -53,8 +53,8 @@
     </select>
 
     <label class="required">Closing Date</label>
-    <input type="date" name="job[closingDate]" value="<?=(isset($_GET['id'])) ? $job->closingDate : '';?>"  />
-    <input type="hidden" name="job[userId]" value="<?=(!isset($_GET['id'])) ? $_SESSION['id'] : '';?>" />
+    <input type="date" name="job[closingDate]" value="<?php if (isset($_GET['id'])) { echo htmlspecialchars(strip_tags($job->closingDate), ENT_QUOTES, 'UTF-8'); } elseif (isset($_POST['job'])) { echo $_POST['job']['closingDate']; } ?>"  />
+    <input type="hidden" name="job[userId]" value="<?=$_SESSION['id'];?>" />
     
     <input type="submit" name="submit" value="Save" />
 </form>

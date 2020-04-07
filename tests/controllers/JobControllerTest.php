@@ -214,12 +214,12 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
     // Edit Job Test
     public function testEditJobError() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
             'job' => [
-                'id' => '5',
+                'id' => '11',
                 'title' => '',
                 'description' => 'This is a job opening for an experienced Sous Chef for a company based in Northampton.',
                 'locationId' => '850',
@@ -239,12 +239,12 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
 
     public function testEditJob() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
             'job' => [
-                'id' => '5',
+                'id' => '11',
                 'title' => 'Sous Chef',
                 'description' => 'This is a job opening for an experienced Sous Chef for a company based in Northampton.',
                 'locationId' => '850',
@@ -259,7 +259,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
         $jobController = new \JobSite\Controllers\JobController($this->jobsTable, $this->applicantsTable, $this->locationsTable, $this->categoriesTable, $testGetData, $testPostData, []);
         $jobController->editJobSubmit();
 
-        $job = $this->pdo->query('SELECT id, description FROM job WHERE id = 5')->fetch();
+        $job = $this->pdo->query('SELECT id, description FROM job WHERE id = 11')->fetch();
 
         $this->assertEquals($job['description'], 'This is a job opening for an experienced Sous Chef for a company based in Northampton.');
     }
@@ -267,7 +267,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
     // Apply To Job Tests
     public function testApplyNoDetails() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
@@ -275,7 +275,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
                 'name' => '',
                 'email' => '',
                 'details' => '',
-                'jobId' => 5
+                'jobId' => 11
             ],
             'submit' => true
         ];
@@ -294,7 +294,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
 
     public function testApplyOnlyName() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
@@ -302,7 +302,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
                 'name' => 'Jim Bob',
                 'email' => '',
                 'details' => '',
-                'jobId' => 5
+                'jobId' => 11
             ],
             'submit' => true
         ];
@@ -323,7 +323,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
 
     public function testApplyOnlyEmail() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
@@ -331,7 +331,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
                 'name' => '',
                 'email' => 'jim@bob.com',
                 'details' => '',
-                'jobId' => 5
+                'jobId' => 11
             ],
             'submit' => true
         ];
@@ -352,7 +352,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
 
     public function testApplyOnlyCoverLetter() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
@@ -360,7 +360,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
                 'name' => '',
                 'email' => '',
                 'details' => 'This is my cover letter!',
-                'jobId' => 5
+                'jobId' => 11
             ],
             'submit' => true
         ];
@@ -381,7 +381,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
 
     public function testApplyOnlyCV() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
@@ -389,7 +389,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
                 'name' => '',
                 'email' => '',
                 'details' => '',
-                'jobId' => 5
+                'jobId' => 11
             ],
             'submit' => true
         ];
@@ -410,7 +410,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
 
     public function testApplyOnlyCVError() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
@@ -418,7 +418,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
                 'name' => '',
                 'email' => '',
                 'details' => '',
-                'jobId' => 5
+                'jobId' => 11
             ],
             'submit' => true
         ];
@@ -439,7 +439,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
 
     public function testApplyAllDetails() {
         $testGetData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $testPostData = [
@@ -447,7 +447,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
                 'name' => 'Jim Bob',
                 'email' => 'jim@bob.com',
                 'details' => 'This is my cover letter!',
-                'jobId' => 5
+                'jobId' => 11
             ],
             'submit' => true
         ];
@@ -463,7 +463,7 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
         $jobController = new \JobSite\Controllers\JobController($this->jobsTable, $this->applicantsTable, $this->locationsTable, $this->categoriesTable, $testGetData, $testPostData, $testFilesData);
         $jobController->applySubmit();
 
-        $application = $this->pdo->query('SELECT name FROM applicants WHERE name = "Jim Bob" AND jobId = 5;')->fetch();
+        $application = $this->pdo->query('SELECT name FROM applicants WHERE name = "Jim Bob" AND jobId = 11;')->fetch();
 
         $this->assertEquals($application['name'], 'Jim Bob');
     }
@@ -657,18 +657,18 @@ class JobControllerTest extends \PHPUnit\Framework\TestCase {
     // Delete Job Test
     public function testDeleteJob () {
         $testPostData = [
-            'id' => 5
+            'id' => 11
         ];
 
         $jobController = new \JobSite\Controllers\JobController($this->jobsTable, $this->applicantsTable, $this->locationsTable, $this->categoriesTable, [], $testPostData, []);
         @$jobController->deleteJob();
 
-        $job = $this->pdo->query('SELECT id FROM job WHERE id = 5;')->fetch();
+        $job = $this->pdo->query('SELECT id FROM job WHERE id = 11;')->fetch();
         $application = $this->pdo->query('SELECT jobId FROM applicants WHERE jobId = 4;')->fetch();
 
         $this->assertTrue(empty($job) && empty($application));
 
-        $this->pdo->query('ALTER TABLE job AUTO_INCREMENT = 5;');
+        $this->pdo->query('ALTER TABLE job AUTO_INCREMENT = 11;');
         $this->pdo->query('ALTER TABLE applicants AUTO_INCREMENT = 3;');
     }
 

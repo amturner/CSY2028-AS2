@@ -15,26 +15,36 @@ class EnquiryController {
         $this->post = $post;
     }
 
+    // Function for display a page that lists all enquiries from the enquiries table. 
     public function listEnquiries($parameters) {
+        // Fetch all records from the users, enquiries and enquiry_replies tables.
         $users = $this->usersTables->retrieveAllRecords();
         $enquiries = $this->enquiriesTable->retrieveAllRecords();
         $enquiryReplies = $this->enquiryRepliesTable->retrieveAllRecords();
 
+        // Check if any parameters have been defined. If not, redirect to the
+        // active enquiries page.
         if (empty($parameters))
             header('Location: /admin/enquiries/active');
 
         $filteredEnquiries = [];
 
+        // Check if the parameter at index 0 is equal to 'active' and display all enquiries.
         if ($parameters[0] == 'active') {
             $title = 'Enquiries';
 
+            // Loop through the enquiries array and filter out any enquiries
+            // that have already been answered.
             foreach ($enquiries as $enquiry)
                 if ($enquiry->answered == 0)
                     $filteredEnquiries[] = $enquiry;
         }
+        // Check if the parameter at index 0 is equal to 'archived' and display all previous enquiries.
         elseif ($parameters[0] == 'archived') {
             $title = 'Previous Enquiries';
 
+            // Loop through the enquiries array and filter out any enquiries
+            // that have not yet been answered.
             foreach ($enquiries as $enquiry)
                 if ($enquiry->answered == 1) {
                     $filteredEnquiries[] = $enquiry;
@@ -55,7 +65,9 @@ class EnquiryController {
         ];
     }
 
+    // Function for submitting the contact form.
     public function contactSubmit() {
+        // Check if the contact form has actually been submitted.
         if (isset($this->post['submit'])) {
             $errors = [];
 
@@ -75,6 +87,7 @@ class EnquiryController {
             if ($this->post['contact']['message'] == '')
                 $errors[] = 'Your message cannot be blank.';
 
+            // Check if no errors have been generated and create the enquiry in the database.
             if (count($errors) == 0) {
                 $this->post['contact']['firstname'] = htmlspecialchars(strip_tags($this->post['contact']['firstname']), ENT_QUOTES, 'UTF-8');
                 $this->post['contact']['surname'] = htmlspecialchars(strip_tags($this->post['contact']['surname']), ENT_QUOTES, 'UTF-8');
@@ -103,6 +116,7 @@ class EnquiryController {
         ];
     }
 
+    // Funtion for displaying the contact page.
     public function contactForm() { 
         return [
             'layout' => 'mainlayout.html.php',
@@ -112,6 +126,7 @@ class EnquiryController {
         ];
     }
 
+    // Function for submitting the enquiry reply form.
     public function replyEnquirySubmit() {
         if (isset($this->post['submit'])) {
             $enquiry = $this->enquiriesTable->retrieveRecord('id', $this->get['id'])[0];
@@ -157,9 +172,12 @@ class EnquiryController {
         ];
     }
 
+    // Function for displaying the enquiry reply form.
     public function replyEnquiryForm() {
         $enquiry = $this->enquiriesTable->retrieveRecord('id', $this->get['id'])[0];
 
+        // Check if $enquiry is empty or has an answered value equal to 1. If so,
+        // redirect the user back to /admin/enquiries.
         if (empty($enquiry) || $enquiry->answered == 1)
             header('Location: /admin/enquiries');
 
@@ -173,6 +191,7 @@ class EnquiryController {
         ]; 
     }
 
+    // Function for deleting an enquiry and any replies from the database.
     public function deleteEnquiry() {
         $this->enquiriesTable->deleteRecordById($this->post['enquiry']['id']);
         $this->enquiryRepliesTable->deleteRecord('enquiry_id', $this->post['enquiry']['id']);

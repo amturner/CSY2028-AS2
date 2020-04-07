@@ -7,9 +7,13 @@ class JobSiteController {
         $this->jobsTable = $jobsTable;
     }
 
+    // Function for displaying the home page.
     public function home($parameters) {
+        // Retrieve all jobs ordered by closing date ascending from the job table.
         $jobs = $this->jobsTable->retrieveAllRecords('closingDate', 'ASC');
 
+        // Loop through the jobs array and make any jobs where the 
+        // current date is past the closing date inactive.
         foreach ($jobs as $job) {
             if (date('Y-m-d') > $job->closingDate) {
                 $values = [
@@ -23,6 +27,8 @@ class JobSiteController {
 
         $filteredJobs = [];
 
+        // Loop through the jobs array and only store jobs with a 
+        // closing date after the current date in the $filteredJobs array.
         for ($i=0; $i<10; $i++) {
             if (!isset($jobs[$i]))
                 break;
@@ -42,6 +48,7 @@ class JobSiteController {
         ];
     }
 
+    // Function to display the about page.
     public function about($parameters) {
         return [
             'layout' => 'mainlayout.html.php',
@@ -53,6 +60,7 @@ class JobSiteController {
         ];
     }
 
+    // Function to display the FAQs page.
     public function faq() {
         return [
             'layout' => 'mainlayout.html.php',

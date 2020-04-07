@@ -26,7 +26,7 @@ class CategoryEntityTest extends \PHPUnit\Framework\TestCase {
     public function testGetJobsCount() {
         $category = $this->categoriesTable->retrieveRecord('id', 1)[0];
 
-        $this->assertEquals($category->getJobsCount(), 2);
+        $this->assertEquals($category->getJobsCount(), 4);
     }
 }
 ?>

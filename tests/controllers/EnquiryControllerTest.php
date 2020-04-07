@@ -52,7 +52,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 4);
+        $this->assertCount(4, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryOnlyFirstname() {
@@ -70,7 +70,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 3);
+        $this->assertCount(3, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryOnlySurname() {
@@ -88,7 +88,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 3);
+        $this->assertCount(3, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryOnlyEmail() {
@@ -106,7 +106,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 3);
+        $this->assertCount(3, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryOnlyPhone() {
@@ -124,7 +124,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 4);
+        $this->assertCount(4, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryOnlyMessage() {
@@ -142,7 +142,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 3);
+        $this->assertCount(3, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryFirstnameSurname() {
@@ -160,7 +160,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 2);
+        $this->assertCount(2, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryFirstnameSurnamePhone() {
@@ -178,7 +178,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 2);
+        $this->assertCount(2, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryFirstnameSurnameMessage() {
@@ -196,7 +196,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 1);
+        $this->assertCount(1, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquiryInvalidEmail() {
@@ -214,7 +214,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
         $enquiryController = new \JobSite\Controllers\EnquiryController($this->usersTable, $this->enquiriesTable, $this->enquiryRepliesTable, [], $testPostData);
         $enquiry = $enquiryController->contactSubmit();
 
-        $this->assertEquals(count($enquiry['variables']['errors']), 1);
+        $this->assertCount(1, $enquiry['variables']['errors']);
     }
 
     public function testCreateEnquirySuccessful() {
@@ -256,7 +256,7 @@ class EnquiryControllerTest extends \PHPUnit\Framework\TestCase {
 
         $reply = $enquiryController->replyEnquirySubmit();
 
-        $this->assertEquals(count($reply['variables']['errors']), 1);
+        $this->assertCount(1, $reply['variables']['errors']);
     }
 
     public function testEnquiryReply() {

@@ -319,6 +319,7 @@ class Routes implements \CSY2028\Routes {
 
     // Function for updating the user's role.
     public function updateRole() {
+        // Check if the session variable $_SESSION['id'] has been set.
         if (isset($_SESSION['id'])) {
             require '../dbConnection.php';
             $usersTable = new \CSY2028\DatabaseTable($pdo, 'users', 'id', '\JobSite\Entities\User');

@@ -13,6 +13,8 @@ class CategoryController {
         $this->post = $post;
     }
 
+    // Function for displaying a page listing out all 
+    // the categories currently in the category table
     public function listCategories() {
         return [
             'layout' => 'sidebarlayout.html.php',
@@ -24,8 +26,11 @@ class CategoryController {
         ];
     }
 
+    // Function for submitting the category edit form
     public function editCategorySubmit() {
+        // Check if the user has actually submitted the form.
         if (isset($this->post['submit'])) {
+            // Check if $_GET['id'] is set. If so, retrieve the category with the specified ID.
             if (isset($this->get['id']))
                 $category = $this->categoriesTable->retrieveRecord('id', $this->get['id'])[0];
             else
@@ -36,7 +41,9 @@ class CategoryController {
             if ($this->post['category']['name'] == '')
                 $errors[] = 'The name cannot be blank.';
 
+            // Check if no errors have been generated from input validation.
             if (count($errors) == 0) {
+                // Update page name accoding to whether $_GET['id'] is set.
                 if (isset($this->get['id']))
                     $pageName = 'Category Updated';
                 else
@@ -55,6 +62,7 @@ class CategoryController {
             }
             // Display the edit form with any generated errors.
             else {
+                // Update page name accoding to whether $_GET['id'] is set.
                 if (isset($this->get['id']))
                     $pageName = 'Edit Category';
                 else
@@ -78,7 +86,9 @@ class CategoryController {
         ];
     }
 
+    // Function for displaying the category edit form
     public function editCategoryForm() {
+        // Check if $_GET['id'] has been set. If so, display a pre-filled form.
         if (isset($this->get['id'])) {
             $category = $this->categoriesTable->retrieveRecord('id', $this->get['id'])[0];
 
@@ -92,6 +102,7 @@ class CategoryController {
                 'title' => 'Admin Panel - Edit Category'
             ];
         }
+        // Display an form.
         else {
             return [
                 'layout' => 'sidebarlayout.html.php',
@@ -104,6 +115,7 @@ class CategoryController {
         }
     }
 
+    // Function for deleting a category from the category table.
     public function deleteCategory() {
         $this->categoriesTable->deleteRecordById($this->post['category']['id']);
 

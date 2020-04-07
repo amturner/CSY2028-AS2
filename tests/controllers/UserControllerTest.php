@@ -37,7 +37,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 5);
+        $this->assertCount(5, $user['variables']['errors']);
     }
 
     public function testAddUserOnlyUsername() {
@@ -56,7 +56,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 4);
+        $this->assertCount(4, $user['variables']['errors']);
     }
 
     public function testAddUserOnlyFirstname() {
@@ -75,7 +75,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 4);
+        $this->assertCount(4, $user['variables']['errors']);
     }
 
     public function testAddUserOnlySurname() {
@@ -94,7 +94,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 4);
+        $this->assertCount(4, $user['variables']['errors']);
     }
 
     public function testAddUserOnlyEmail() {
@@ -113,7 +113,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 4);
+        $this->assertCount(4, $user['variables']['errors']);
     }
 
     public function testAddUserOnlyPassword() {
@@ -132,7 +132,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 4);
+        $this->assertCount(4, $user['variables']['errors']);
     }
 
     public function testAddUserUsernameAndFirstname() {
@@ -151,7 +151,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 3);
+        $this->assertCount(3, $user['variables']['errors']);
     }
 
     public function testAddUserUsernameFirstnameSurname() {
@@ -170,7 +170,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 2);
+        $this->assertCount(2, $user['variables']['errors']);
     }
 
     public function testAddUserUsernameFirstnameSurnamePassword() {
@@ -189,7 +189,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 1);
+        $this->assertCount(1, $user['variables']['errors']);
     }
 
     public function testAddUserInvalidEmail() {
@@ -208,7 +208,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 1);
+        $this->assertCount(1, $user['variables']['errors']);
     }
 
     public function testAddUserEmailAlreadyTaken() {
@@ -227,7 +227,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
     
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 1);
+        $this->assertCount(1, $user['variables']['errors']);
     }
 
 
@@ -276,7 +276,7 @@ class UserControllerTest extends \PHPUnit\Framework\TestCase {
 
         $user = $userController->editUserSubmit();
 
-        $this->assertEquals(count($user['variables']['errors']), 1);
+        $this->assertCount(1, $user['variables']['errors']);
     }
 
     public function testEditUser() {
