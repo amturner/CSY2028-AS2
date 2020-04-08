@@ -29,7 +29,7 @@ class JobSiteController {
 
         // Loop through the jobs array and only store jobs with a 
         // closing date after the current date in the $filteredJobs array.
-        for ($i=0; $i<10; $i++) {
+        for ($i=0; $i<=10; $i++) {
             if (!isset($jobs[$i]))
                 break;
             

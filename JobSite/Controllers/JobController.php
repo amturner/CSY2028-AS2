@@ -490,7 +490,7 @@ class JobController {
                         // Filter out all categories that aren't associated with a job in the specified
                         // category.
                         foreach ($jobs as $job) {
-                            foreach ($categories as $category) {
+                            foreach ($this->categories as $category) {
                                 if ($job->categoryId == $category->id && $job->active == 1) {
                                     $filteredCategories[] = $category->name;
                                 }
@@ -509,7 +509,7 @@ class JobController {
                         // Filter out all categories that aren't associated with a job in the specified
                         // category.
                         foreach ($jobs as $job) {
-                            foreach ($categories as $category) {
+                            foreach ($this->categories as $category) {
                                 if ($job->categoryId == $category->id && $job->active == 0) {
                                     $filteredCategories[] = $category->name;
                                 }
